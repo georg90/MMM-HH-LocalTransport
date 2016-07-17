@@ -23,8 +23,7 @@ Module.register("MMM-HH-LocalTransport",{
 		apiBase: 'http://api-test.geofox.de/gti/public/',
 		apiKey: 'Hamburg',
 		apiUser: 'name',
-        id: "Master:9910910", // HH HBF 
-        departureStation: "Hamburg HBF",  
+        id: "Master:9910910", // HH HBF
 	},
 
 	// Define required scripts.
