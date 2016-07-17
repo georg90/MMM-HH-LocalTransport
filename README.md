@@ -24,5 +24,9 @@ You need to obtain your API key here: http://www.hvv.de/fahrplaene/fahrplanausku
 	        }
     	},
 ```
+# Screenshot
+![screenshot](https://cloud.githubusercontent.com/assets/6489464/16900320/11ec448a-4c22-11e6-8754-181862a52540.png)
+
+
 # Further information
 For all config options check [here](https://github.com/georg90/MMM-HH-LocalTransport/blob/master/MMM-HH-LocalTransport.js#L14-L26).
