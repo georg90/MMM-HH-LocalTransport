@@ -1,0 +1,27 @@
+{
+  "name": "MMM-HH-LocalTransport",
+  "version": "0.9.0",
+  "description": "Local transport in Hamburg module for MagicMirror",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/georg90/MMM-HH-LocalTransport"
+  },
+  "keywords": [
+    "magic mirror",
+    "smart mirror",
+    "localtransport",
+    "module",
+    "hvv"
+  ],
+  "author": "Georg Peters",
+  "contributors": "https://github.com/georg90/MMM-HH-LocalTransport/graphs/contributors",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/georg90/MMM-HH-LocalTransport/issues"
+  },
+  "homepage": "https://github.com/georg90/MMM-HH-LocalTransport#readme",
+  "dependencies": {
+    "unirest": "latest",
+    "node-forge": "latest"
+    }
+}
