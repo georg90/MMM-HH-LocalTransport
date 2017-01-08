@@ -18,13 +18,9 @@ Module.register("MMM-Paris-RATP-PG",{
     useRealtime: true,
     updateInterval: 1 * 60 * 1000, // Update every minute.
     animationSpeed: 2000,
+    convertToWaitingTime: true,
     initialLoadDelay: 0, // start delay seconds.
     apiBase: 'https://api-ratp.pierre-grimaud.fr/v2/',
-    busStations: [{type: 'bus', line: 38, stations: 2758, destination: 183}, 
-                  {type: 'bus', line: 91, stations: 4002, destination: 261},
-                  {type: 'bus', line: 91, stations: 4002, destination: 262},
-                  {type: 'bus', line: 83, stations: 4002, destination: 169},
-                  {type: 'rers', line: 'B', stations: 62, destination: 4}], //array of the bus line/stop/direction/label to monitors
   },
   
   // Define required scripts.
