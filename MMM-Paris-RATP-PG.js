@@ -35,6 +35,7 @@
 		Log.info("Starting module: " + this.name);
 		this.sendSocketNotification('SET_CONFIG', this.config);
     this.transports = [];
+    this.busSchedules = {};
 		this.loaded = false;
 		this.updateTimer = null;
 	},
@@ -54,13 +55,18 @@
     
     for (var busIndex in this.busStations) {
       var bus = this.busStations[busIndex];
+      var busIndex = bus.bus + '/' + bus.stations + '/' + bus.destination;
       //var busSchedule = this.busSchedule[busIndex];
       var row = document.createElement("tr");
       table.appendChild(row);
       
       var depCell = document.createElement("td");
       depCell.className = "departuretime";
-      depCell.innerHTML = "time N/A ";
+      if (!this.busSchedules[busIndex]) {
+        depCell.innerHTML = "N/A ";
+      } else {
+        depCell.innerHTML = this.busSchedules[busIndex][0].message;
+      }
       
       var busNameCell = document.createElement("td");
       busNameCell.innerHTML = this.busStations[busIndex].label;
@@ -84,9 +90,9 @@
   },
   
   socketNotificationReceived: function(notification, payload) {
-		if (notification === "BUS"){ //*** I'll have one notification per bus to check...
+		if (notification === "BUS"){
 			Log.info("Bus schedule arrived");
-			this.busSchedule = payload;
+			this.busSchedule[payload.id] = payload.schedules;
 			this.loaded = true;
 			this.updateDom(this.config.animationSpeed);
 		}
