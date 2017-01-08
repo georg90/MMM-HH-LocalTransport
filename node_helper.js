@@ -58,7 +58,7 @@ module.exports = NodeHelper.create({
         })
         .end(function (response) {
 	      console.log('received response for request: ');
-	      console.log(response);
+	      console.log(response.body);
           self.processBus(response.body);
 		    	if (retry) {
 	  				self.scheduleUpdate((self.loaded) ? -1 : this.config.retryDelay);
