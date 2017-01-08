@@ -76,6 +76,15 @@ Module.register("MMM-Paris-RATP-PG",{
         if (!this.busSchedules[stopIndex]) {
           depCell.innerHTML = "N/A ";
         } else {
+          if (this.config.convertToWaitingTime && /^\d{1,2}[:][0-5][0-9]$/.test(comingBus.message)) {
+            var transportTime = comingBus.message.split(':');
+            var endDate = new Date(0, 0, 0, transportTime[0], transportTime[1]);
+            var now = new Date();
+            var startDate = new Date(0, 0, 0, now.getHours(), now.getMinutes(), now.getSeconds());
+            var waitingTime = endDate - startDate; 
+            if (startDate > endDate) { waitingTime += 1000 * 60 * 60 * 24);
+            comingBus.message.split('dans ' + waitingTime + ' mn');
+          }
           depCell.innerHTML = comingBus.message;
         }
         row.appendChild(depCell);
