@@ -48,21 +48,18 @@ module.exports = NodeHelper.create({
   updateTimetable: function() {
     for (var index in this.config.busStations) {
       var busStop = this.config.busStations[index];
-      var url = this.config.apiBase + 'bus/' + busStop.bus + '/stations/' + busStop.stations + '?destination=' + busStop.destination; // get schedule for that bus
-      console.log("requesting: " + url);
+      var url = this.config.apiBase + busStop.type + '/' + busStop.line + '/stations/' + busStop.stations + '?destination=' + busStop.destination; // get schedule for that bus
       var self = this;
-			var retry = true;
+      var retry = true;
       unirest.get(url)
         .headers({
           'Accept': 'application/json;charset=utf-8'
         })
         .end(function (response) {
-          console.log('received response for request: ');
-          console.log(response.body);
           self.processBus(response.body);
-          if (retry) {
-          self.scheduleUpdate((self.loaded) ? -1 : this.config.retryDelay);
-          }
+            if (retry) {
+	      self.scheduleUpdate((self.loaded) ? -1 : this.config.retryDelay);
+  	    }
         });
     }
   },
@@ -71,7 +68,7 @@ module.exports = NodeHelper.create({
     this.bus = {};
     var schedules = data.response.schedules;
     var informations = data.response.informations;
-    this.bus.id = informations.line + '/' + informations.station.id_station + '/' + informations.destination.id_destination;
+    this.bus.id = informations.line + '/' + (informations.station.id_station || informations.station.id) + '/' + (informations.destination.id_destination || informations.destination.id);
     this.bus.schedules = schedules;
     this.loaded = true;
     this.sendSocketNotification("BUS", this.bus);

@@ -9,93 +9,94 @@
  * MIT Licensed.
  */
  
- Module.register("MMM-Paris-RATP-PG",{
+Module.register("MMM-Paris-RATP-PG",{
  
   // Define module defaults
-	defaults: {
-		maximumEntries: 10, // Total Maximum Entries
-		maxTimeOffset: 200, // Max time in the future for entries
-		useRealtime: true,
-		updateInterval: 3 * 60 * 1000, // Update every minute.
-		animationSpeed: 2000,
-		fade: true,
-		fadePoint: 0.25, // Start on 1/4th of the list.
-        initialLoadDelay: 0, // start delay seconds.
-		apiBase: 'https://api-ratp.pierre-grimaud.fr/v2/',
-    busStations: [{bus: 38, stations: 2758, destination: 183, label: '38 N'}], //array of the bus line/stop/direction/label to monitors
-	},
+  defaults: {
+    maximumEntries: 2, // Total Maximum Entries per transport
+    maxTimeOffset: 200, // Max time in the future for entries
+    useRealtime: true,
+    updateInterval: 1 * 60 * 1000, // Update every minute.
+    animationSpeed: 2000,
+    initialLoadDelay: 0, // start delay seconds.
+    apiBase: 'https://api-ratp.pierre-grimaud.fr/v2/',
+    busStations: [{type: 'bus', line: 38, stations: 2758, destination: 183}, 
+                  {type: 'bus', line: 91, stations: 4002, destination: 261},
+                  {type: 'bus', line: 91, stations: 4002, destination: 262},
+                  {type: 'bus', line: 83, stations: 4002, destination: 169},
+                  {type: 'rers', line: 'B', stations: 62, destination: 4}], //array of the bus line/stop/direction/label to monitors
+  },
   
   // Define required scripts.
-	getStyles: function() {
-		return ["MMM-Paris-RATP-Transport.css", "font-awesome.css"];
-	},
+  getStyles: function() {
+    return ["MMM-Paris-RATP-Transport.css", "font-awesome.css"];
+  },
   
   // Define start sequence.
-	start: function() {
-		Log.info("Starting module: " + this.name);
-		this.sendSocketNotification('SET_CONFIG', this.config);
-    this.transports = [];
+  start: function() {
+    Log.info("Starting module: " + this.name);
+    this.sendSocketNotification('SET_CONFIG', this.config);
     this.busSchedules = {};
-		this.loaded = false;
-		this.updateTimer = null;
-	},
-  
+    this.loaded = false;
+    this.updateTimer = null;
+  },
+
   // Override dom generator.
   getDom: function() {
+    Log.info ('modules.js - entering getDom');
     var wrapper = document.createElement("div");
     
     if (!this.loaded) {
-			wrapper.innerHTML = "Loading connections ...";
-			wrapper.className = "dimmed light small";
-			return wrapper;
-		}
+      wrapper.innerHTML = "Loading connections ...";
+      wrapper.className = "dimmed light small";
+      return wrapper;
+    }
     
     var table = document.createElement("table");
     table.className = "small";
-    
-    for (var busIndex in this.busStations) {
-      var bus = this.busStations[busIndex];
-      var busIndex = bus.bus + '/' + bus.stations + '/' + bus.destination;
-      //var busSchedule = this.busSchedule[busIndex];
-      var row = document.createElement("tr");
-      table.appendChild(row);
+
+    for (var busIndex = 0; busIndex < this.config.busStations.length; busIndex++) {
+      var stop = this.config.busStations[busIndex];
+      var stopIndex = stop.line + '/' + stop.stations + '/' + stop.destination;
+      var row, comingBus;
+      var comingBuses = this.busSchedules[stopIndex] || [{message:'N/A', destination: 'N/A'}];
+      for (var comingIndex = 0; (comingIndex < this.config.maximumEntries) && (comingIndex < comingBuses.length); comingIndex++) {
+        row = document.createElement("tr");
+        table.appendChild(row);
+        comingBus = comingBuses[comingIndex];
       
-      var depCell = document.createElement("td");
-      depCell.className = "departuretime";
-      if (!this.busSchedules[busIndex]) {
-        depCell.innerHTML = "N/A ";
-      } else {
-        depCell.innerHTML = this.busSchedules[busIndex][0].message;
+        var busNameCell = document.createElement("td");
+        busNameCell.innerHTML = stop.label || stop.line;
+        busNameCell.className = "align-right bright";
+        row.appendChild(busNameCell);
+
+        var busDestination = document.createElement("td");
+        busDestination.innerHTML = comingBus.destination;
+        busDestination.className = "align-left";
+        row.appendChild(busDestination);
+
+        var depCell = document.createElement("td");
+        depCell.className = "bright";
+        if (!this.busSchedules[stopIndex]) {
+          depCell.innerHTML = "N/A ";
+        } else {
+          depCell.innerHTML = comingBus.message;
+        }
+        row.appendChild(depCell);
+      
       }
-      
-      var busNameCell = document.createElement("td");
-      busNameCell.innerHTML = this.busStations[busIndex].label;
-      busNameCell.className = "align-right bright";
-      row.appendChile(busNameCell);
-      
-      if (this.config.fade && this.config.fadePoint < 1) {
-				if (this.config.fadePoint < 0) {
-					this.config.fadePoint = 0;
-				}
-				var startingPoint = this.trains.length * this.config.fadePoint;
-				var steps = this.trains.length - startingPoint;
-				if (t >= startingPoint) {
-					var currentStep = t - startingPoint;
-					row.style.opacity = 1 - (1 / steps * currentStep);
-				}
-			}
-      
     }
     return table;
   },
   
   socketNotificationReceived: function(notification, payload) {
-		if (notification === "BUS"){
-			Log.info("Bus schedule arrived");
-			this.busSchedule[payload.id] = payload.schedules;
-			this.loaded = true;
-			this.updateDom(this.config.animationSpeed);
-		}
-	}
-
- });
+    console.log ('module.js entering socketNotificationReceived: ' + notification);
+    if (notification === "BUS"){
+      console.log("Bus schedule arrived in modules.js");
+      console.log(payload);
+      this.busSchedules[payload.id] = payload.schedules;
+      this.loaded = true;
+      this.updateDom(this.config.animationSpeed);
+    }
+  }
+});
