@@ -10,7 +10,6 @@
  */
 
 const NodeHelper = require("node_helper");
-const forge = require('node-forge');
 const unirest = require('unirest');
 
 module.exports = NodeHelper.create({
