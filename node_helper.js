@@ -57,24 +57,24 @@ module.exports = NodeHelper.create({
           'Accept': 'application/json;charset=utf-8'
         })
         .end(function (response) {
-	      console.log('received response for request: ');
-	      console.log(response.body);
+          console.log('received response for request: ');
+          console.log(response.body);
           self.processBus(response.body);
-		    	if (retry) {
-	  				self.scheduleUpdate((self.loaded) ? -1 : this.config.retryDelay);
-  				}
+          if (retry) {
+          self.scheduleUpdate((self.loaded) ? -1 : this.config.retryDelay);
+          }
         });
     }
   },
 
   processBus: function(data) {
-	  this.bus = {};
+    this.bus = {};
     var schedules = data.response.schedules;
     var informations = data.response.informations;
     this.bus.id = informations.line + '/' + informations.station.id_station + '/' + informations.destination.id_destination;
     this.bus.schedules = schedules;
-		this.loaded = true;
-		this.sendSocketNotification("BUS", this.bus);
-	}
+    this.loaded = true;
+    this.sendSocketNotification("BUS", this.bus);
+  }
 
 });
