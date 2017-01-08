@@ -1,25 +1,26 @@
 {
-  "name": "MMM-HH-LocalTransport",
-  "version": "0.9.0",
-  "description": "Local transport in Hamburg module for MagicMirror",
+  "name": "MMM-Paris-RATP-PG",
+  "version": "0.1.0",
+  "description": "RATP Local transport in Paris based on Pierre Grimaud API module for MagicMirror",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/georg90/MMM-HH-LocalTransport"
+    "url": "git+https://github.com/da4throux/MMM-Paris-RATP-PG"
   },
   "keywords": [
     "magic mirror",
     "smart mirror",
     "localtransport",
     "module",
-    "hvv"
+    "paris",
+    "RATP"
   ],
-  "author": "Georg Peters",
-  "contributors": "https://github.com/georg90/MMM-HH-LocalTransport/graphs/contributors",
+  "author": "da4throux",
+  "contributors": "https://github.com/da4throux/MMM-Paris-RATP-PG/graphs/contributors",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/georg90/MMM-HH-LocalTransport/issues"
+    "url": "https://github.com/da4throux/MMM-Paris-RATP-PG/issues"
   },
-  "homepage": "https://github.com/georg90/MMM-HH-LocalTransport#readme",
+  "homepage": "https://github.com/da4throux/MMM-Paris-RATP-PG#readme",
   "dependencies": {
     "unirest": "latest",
     "node-forge": "latest"
