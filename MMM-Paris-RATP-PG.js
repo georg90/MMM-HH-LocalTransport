@@ -9,7 +9,7 @@
  * MIT Licensed.
  */
  
- Module.register("MMM-HH-LocalTransport",{
+ Module.register("MMM-Paris-RATP-PG",{
  
   // Define module defaults
 	defaults: {
