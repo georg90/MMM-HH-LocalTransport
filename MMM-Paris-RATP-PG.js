@@ -22,7 +22,7 @@
 		fadePoint: 0.25, // Start on 1/4th of the list.
         initialLoadDelay: 0, // start delay seconds.
 		apiBase: 'https://api-ratp.pierre-grimaud.fr/v2/',
-    busStations: [{line: 38, station: 2758, direction: 183, label: '38 N'}], //array of the bus line/stop/direction/label to monitors
+    busStations: [{bus: 38, stations: 2758, destination: 183, label: '38 N'}], //array of the bus line/stop/direction/label to monitors
 	},
   
   // Define required scripts.
