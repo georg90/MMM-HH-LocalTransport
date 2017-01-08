@@ -48,9 +48,9 @@ module.exports = NodeHelper.create({
   updateTimetable: function() {
     for (var index in this.config.busStations) {
       var busStop = this.config.busStations[index];
-  	  var url = this.config.apiBase + 'bus/' + busStop.bus + '/stations/' + busStop.stations + '?destination=' + busStop.destination; // get schedule for that bus
-      Log.info("requesting: " + url);
-  		var self = this;
+      var url = this.config.apiBase + 'bus/' + busStop.bus + '/stations/' + busStop.stations + '?destination=' + busStop.destination; // get schedule for that bus
+      console.log("requesting: " + url);
+      var self = this;
 			var retry = true;
       unirest.get(url)
         .headers({
