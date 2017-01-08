@@ -11,6 +11,7 @@
 
 const NodeHelper = require("node_helper");
 const unirest = require('unirest');
+const debug = true;
 
 module.exports = NodeHelper.create({
   start: function () {
@@ -20,6 +21,10 @@ module.exports = NodeHelper.create({
   socketNotificationReceived: function(notification, payload) {
     const self = this;
     if (notification === 'SET_CONFIG' && this.started == false) {
+      if (debug) {
+        console.log (' *** config set in node_helper: ');
+        console.log ( payload );
+      }
       this.config = payload;	     
       this.started = true;
       self.scheduleUpdate(this.config.initialLoadDelay);
@@ -51,11 +56,13 @@ module.exports = NodeHelper.create({
       var url = this.config.apiBase + busStop.type + '/' + busStop.line + '/stations/' + busStop.stations + '?destination=' + busStop.destination; // get schedule for that bus
       var self = this;
       var retry = true;
+      console.log(' *** fetching: ' + url);
       unirest.get(url)
         .headers({
           'Accept': 'application/json;charset=utf-8'
         })
         .end(function (response) {
+          console.log (' *** receiving from url: ' + response.body);
           self.processBus(response.body);
             if (retry) {
 	      self.scheduleUpdate((self.loaded) ? -1 : this.config.retryDelay);
