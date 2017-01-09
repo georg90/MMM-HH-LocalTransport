@@ -62,11 +62,19 @@ module.exports = NodeHelper.create({
           'Accept': 'application/json;charset=utf-8'
         })
         .end(function (response) {
-          console.log (' *** receiving from url: ' + response.body);
-          self.processBus(response.body);
-            if (retry) {
-	      self.scheduleUpdate((self.loaded) ? -1 : this.config.retryDelay);
-  	    }
+          if (response && response.body) {
+            self.processBus(response.body);
+          } else {
+            if (response) {
+              console.log (' *** partial response received');
+              console.log (response);
+            } else {
+              console.log (' *** no response received');
+            }
+          }
+          if (retry) {
+            self.scheduleUpdate((self.loaded) ? -1 : this.config.retryDelay);
+          }
         });
     }
   },
