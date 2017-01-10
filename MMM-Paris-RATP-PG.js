@@ -21,7 +21,8 @@ Module.register("MMM-Paris-RATP-PG",{
     convertToWaitingTime: true,
     initialLoadDelay: 0, // start delay seconds.
     apiBase: 'https://api-ratp.pierre-grimaud.fr/v2/',
-    maxLettersForDestination: 20
+    maxLettersForDestination: 22,
+    concatenateArrivals: true,
   },
   
   // Define required scripts.
@@ -55,18 +56,16 @@ Module.register("MMM-Paris-RATP-PG",{
       var firstLine = true;
       var stop = this.config.busStations[busIndex];
       var stopIndex = stop.line + '/' + stop.stations + '/' + stop.destination;
-      var row, comingBus;
+      var previousRow, previousDestination, previousMessage, row, comingBus;
       var comingBuses = this.busSchedules[stopIndex] || [{message:'N/A', destination: 'N/A'}];
       for (var comingIndex = 0; (comingIndex < this.config.maximumEntries) && (comingIndex < comingBuses.length); comingIndex++) {
         row = document.createElement("tr");
-        table.appendChild(row);
         comingBus = comingBuses[comingIndex];
       
         var busNameCell = document.createElement("td");
         busNameCell.className = "align-right bright";
         if (firstLine) {
           busNameCell.innerHTML = stop.label || stop.line;
-          firstLine = false;
         } else {
           busNameCell.innerHTML = ' ';
         }
@@ -97,17 +96,23 @@ Module.register("MMM-Paris-RATP-PG",{
           depCell.innerHTML = comingBus.message;
         }
         row.appendChild(depCell);
-      
+        if (this.config.concatenateArrivals && !firstLine && (comingBus.destination == previousDestination)) {
+          previousMessage += ' / ' + comingBus.message;
+          previousRow.getElementsByTagName('td')[2].innerHTML = previousMessage;
+        } else {
+          table.appendChild(row);
+          previousRow = row;
+          previousMessage = comingBus.message;
+          previousDestination = comingBus.destination;
+        }
+        firstLine = false;      
       }
     }
     return table;
   },
   
   socketNotificationReceived: function(notification, payload) {
-    console.log ('module.js entering socketNotificationReceived: ' + notification);
     if (notification === "BUS"){
-      console.log("Bus schedule arrived in modules.js @ " + new Date().toLocaleTimeString());
-      console.log(payload);
       this.busSchedules[payload.id] = payload.schedules;
       this.loaded = true;
       this.updateDom(this.config.animationSpeed);
