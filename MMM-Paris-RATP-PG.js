@@ -73,9 +73,9 @@ Module.register("MMM-Paris-RATP-PG",{
         row.appendChild(busNameCell);
 
         var busDestination = document.createElement("td");
-        busDestination.innerHTML = comingBus.destination;
+        busDestination.innerHTML = comingBus.destination.substr(0, this.config.maxLettersForDestination);
         busDestination.className = "align-left";
-        row.appendChild(busDestination.substr(this.config.maxLettersForDestination));
+        row.appendChild(busDestination);
 
         var depCell = document.createElement("td");
         depCell.className = "bright";
