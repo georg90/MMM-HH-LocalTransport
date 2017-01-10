@@ -21,6 +21,7 @@ Module.register("MMM-Paris-RATP-PG",{
     convertToWaitingTime: true,
     initialLoadDelay: 0, // start delay seconds.
     apiBase: 'https://api-ratp.pierre-grimaud.fr/v2/',
+    maxLettersForDestination: 20
   },
   
   // Define required scripts.
@@ -74,7 +75,7 @@ Module.register("MMM-Paris-RATP-PG",{
         var busDestination = document.createElement("td");
         busDestination.innerHTML = comingBus.destination;
         busDestination.className = "align-left";
-        row.appendChild(busDestination);
+        row.appendChild(busDestination.substr(this.config.maxLettersForDestination));
 
         var depCell = document.createElement("td");
         depCell.className = "bright";
