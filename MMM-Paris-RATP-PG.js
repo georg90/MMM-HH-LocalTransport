@@ -51,6 +51,7 @@ Module.register("MMM-Paris-RATP-PG",{
     table.className = "small";
 
     for (var busIndex = 0; busIndex < this.config.busStations.length; busIndex++) {
+      var firstLine = true;
       var stop = this.config.busStations[busIndex];
       var stopIndex = stop.line + '/' + stop.stations + '/' + stop.destination;
       var row, comingBus;
@@ -61,8 +62,13 @@ Module.register("MMM-Paris-RATP-PG",{
         comingBus = comingBuses[comingIndex];
       
         var busNameCell = document.createElement("td");
-        busNameCell.innerHTML = stop.label || stop.line;
         busNameCell.className = "align-right bright";
+        if (firstLine) {
+          busNameCell.innerHTML = stop.label || stop.line;
+          firstLine = false;
+        } else {
+          busNameCell.innerHTML = ' ';
+        }
         row.appendChild(busNameCell);
 
         var busDestination = document.createElement("td");
