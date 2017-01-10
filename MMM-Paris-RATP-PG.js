@@ -24,7 +24,9 @@ Module.register("MMM-Paris-RATP-PG",{
     maxLettersForDestination: 22,
     concatenateArrivals: true,
     showSecondsToNextUpdate: true,
-    showLastUpdateTime: true,
+    showLastUpdateTime: false,
+    oldUpdateOpacity: 0.5,
+    debug: false,
   },
   
   // Define required scripts.
@@ -37,6 +39,7 @@ Module.register("MMM-Paris-RATP-PG",{
     Log.info("Starting module: " + this.name);
     this.sendSocketNotification('SET_CONFIG', this.config);
     this.busSchedules = {};
+    this.busLastUpdate = {};
     this.loaded = false;
     this.updateTimer = null;
     var self = this;
@@ -48,8 +51,12 @@ Module.register("MMM-Paris-RATP-PG",{
   getHeader: function () {
     var header = this.data.header;
     if (this.config.showSecondsToNextUpdate) {
-      var timeDifference = new Date() - this.config.lastUpdate;
-      header += ' next update in ' + Math.round((this.config.updateInterval - timeDifference) / 1000) + 's';
+      var timeDifference = Math.round((this.config.updateInterval - new Date() + Date.parse(this.config.lastUpdate)) / 1000);
+      if (timeDifference > 0) {
+        header += ', next update in ' + timeDifference + 's';
+      } else {
+        header += ', update requested ' + Math.abs(timeDifference) + 's ago';
+      }
     }
     if (this.config.showLastUpdateTime) {
       var now = this.config.lastUpdate;
@@ -79,6 +86,7 @@ Module.register("MMM-Paris-RATP-PG",{
       var stopIndex = stop.line + '/' + stop.stations + '/' + stop.destination;
       var previousRow, previousDestination, previousMessage, row, comingBus;
       var comingBuses = this.busSchedules[stopIndex] || [{message:'N/A', destination: 'N/A'}];
+      var comingBusLastUpdate = this.busLastUpdate[stopIndex];
       for (var comingIndex = 0; (comingIndex < this.config.maximumEntries) && (comingIndex < comingBuses.length); comingIndex++) {
         row = document.createElement("tr");
         comingBus = comingBuses[comingIndex];
@@ -116,6 +124,10 @@ Module.register("MMM-Paris-RATP-PG",{
           depCell.innerHTML = comingBus.message;
         }
         row.appendChild(depCell);
+        if ((new Date() - Date.parse(comingBusLastUpdate)) > (this.config.oldUpdateThreshold ? this.config.oldUpdateThreshold : (this.config.updateInterval * 1.1) )) {
+          busDestination.style.opacity = this.config.oldUpdateOpacity;
+          depCell.style.opacity = this.config.oldUpdateOpacity;
+        }
         if (this.config.concatenateArrivals && !firstLine && (comingBus.destination == previousDestination)) {
           previousMessage += ' / ' + comingBus.message;
           previousRow.getElementsByTagName('td')[2].innerHTML = previousMessage;
@@ -132,12 +144,17 @@ Module.register("MMM-Paris-RATP-PG",{
   },
   
   socketNotificationReceived: function(notification, payload) {
-    if (notification === "BUS"){
-      this.busSchedules[payload.id] = payload.schedules;
-      this.loaded = true;
-//      this.updateDom(this.config.animationSpeed);
-      this.config.lastUpdate = new Date();
-      this.updateDom();
+    switch (notification) {
+      case "BUS":
+        this.busSchedules[payload.id] = payload.schedules;
+        this.busLastUpdate[payload.id] = payload.lastUpdate;
+        this.loaded = true;
+        this.updateDom();
+        break;
+      case "UPDATE":
+        this.config.lastUpdate = payload.lastUpdate;
+        this.updateDom();
+        break;
     }
   }
 });

@@ -11,7 +11,6 @@
 
 const NodeHelper = require("node_helper");
 const unirest = require('unirest');
-const debug = true;
 
 module.exports = NodeHelper.create({
   start: function () {
@@ -21,11 +20,11 @@ module.exports = NodeHelper.create({
   socketNotificationReceived: function(notification, payload) {
     const self = this;
     if (notification === 'SET_CONFIG' && this.started == false) {
-      if (debug) {
+      this.config = payload;	     
+      if (this.config.debug) {
         console.log (' *** config set in node_helper: ');
         console.log ( payload );
       }
-      this.config = payload;	     
       this.started = true;
       self.scheduleUpdate(this.config.initialLoadDelay);
     };
@@ -51,12 +50,13 @@ module.exports = NodeHelper.create({
    * Calls processTrains on succesfull response.
   */
   updateTimetable: function() {
+    this.sendSocketNotification("UPDATE", { lastUpdate : new Date()});
     for (var index in this.config.busStations) {
       var busStop = this.config.busStations[index];
       var url = this.config.apiBase + busStop.type + '/' + busStop.line + '/stations/' + busStop.stations + '?destination=' + busStop.destination; // get schedule for that bus
       var self = this;
       var retry = true;
-      console.log(' *** fetching: ' + url);
+      if (this.config.debug) { console.log(' *** fetching: ' + url); }
       unirest.get(url)
         .headers({
           'Accept': 'application/json;charset=utf-8'
@@ -65,11 +65,13 @@ module.exports = NodeHelper.create({
           if (response && response.body) {
             self.processBus(response.body);
           } else {
-            if (response) {
-              console.log (' *** partial response received');
-              console.log (response);
-            } else {
-              console.log (' *** no response received');
+            if (self.config.debug) {
+              if (response) {
+                console.log (' *** partial response received');
+                console.log (response);
+              } else {
+                console.log (' *** no response received');
+              }
             }
           }
           if (retry) {
@@ -85,6 +87,7 @@ module.exports = NodeHelper.create({
     var informations = data.response.informations;
     this.bus.id = informations.line + '/' + (informations.station.id_station || informations.station.id) + '/' + (informations.destination.id_destination || informations.destination.id);
     this.bus.schedules = schedules;
+    this.bus.lastUpdate = new Date();
     this.loaded = true;
     this.sendSocketNotification("BUS", this.bus);
   }
