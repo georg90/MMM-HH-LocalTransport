@@ -13,20 +13,21 @@ Module.register("MMM-Paris-RATP-PG",{
  
   // Define module defaults
   defaults: {
-    maximumEntries: 2, // Total Maximum Entries per transport
+    maximumEntries: 2, //if the APIs sends several results for the incoming transport how many should be displayed
     maxTimeOffset: 200, // Max time in the future for entries
     useRealtime: true,
-    updateInterval: 1 * 60 * 1000, // Update every minute.
+    updateInterval: 1 * 60 * 1000, //time in ms between pulling request for new times (update request)
     animationSpeed: 2000,
-    convertToWaitingTime: true,
+    convertToWaitingTime: true, // messages received from API can be 'hh:mm' in that case convert it in the waiting time 'x mn'
     initialLoadDelay: 0, // start delay seconds.
     apiBase: 'https://api-ratp.pierre-grimaud.fr/v2/',
-    maxLettersForDestination: 22,
-    concatenateArrivals: true,
-    showSecondsToNextUpdate: true,
-    showLastUpdateTime: false,
-    oldUpdateOpacity: 0.5,
-    debug: false,
+    maxLettersForDestination: 22, //will limit the length of the destination string
+    concatenateArrivals: true, //if for a transport there is the same destination and several times, they will be displayed on one line
+    showSecondsToNextUpdate: true,  // display a countdown to the next update pull (should I wait for a refresh before going ?)
+    showLastUpdateTime: false,  //display the time when the last pulled occured (taste & color...)
+    oldUpdateOpacity: 0.5, //when a displayed time age has reached a threshold their display turns darker (i.e. less reliable)
+    oldThreshold: 0.1, //if (1+x) of the updateInterval has passed since the last refresh... then the oldUpdateOpacity is applied
+    debug: false, //console.log more things to help debugging
   },
   
   // Define required scripts.
@@ -125,7 +126,7 @@ Module.register("MMM-Paris-RATP-PG",{
           }
         }
         row.appendChild(depCell);
-        if ((new Date() - Date.parse(comingBusLastUpdate)) > (this.config.oldUpdateThreshold ? this.config.oldUpdateThreshold : (this.config.updateInterval * 1.1) )) {
+        if ((new Date() - Date.parse(comingBusLastUpdate)) > (this.config.oldUpdateThreshold ? this.config.oldUpdateThreshold : (this.config.updateInterval * (1 + this.config.oldThreshold)) )) {
           busDestination.style.opacity = this.config.oldUpdateOpacity;
           depCell.style.opacity = this.config.oldUpdateOpacity;
         }
