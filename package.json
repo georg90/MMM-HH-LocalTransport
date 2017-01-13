@@ -1,6 +1,6 @@
 {
   "name": "MMM-Paris-RATP-PG",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "RATP Local transport in Paris based on Pierre Grimaud API module for MagicMirror",
   "repository": {
     "type": "git",
