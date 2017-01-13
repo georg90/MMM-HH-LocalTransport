@@ -119,9 +119,10 @@ Module.register("MMM-Paris-RATP-PG",{
               waitingTime += 1000 * 60 * 60 * 24; 
             }
             waitingTime = Math.floor(waitingTime / 1000 / 60);
-            comingBus.message = waitingTime + ' mn';
+            depCell.innerHTML = waitingTime + ' mn';
+          } else {
+            depCell.innerHTML = comingBus.message;
           }
-          depCell.innerHTML = comingBus.message;
         }
         row.appendChild(depCell);
         if ((new Date() - Date.parse(comingBusLastUpdate)) > (this.config.oldUpdateThreshold ? this.config.oldUpdateThreshold : (this.config.updateInterval * 1.1) )) {
