@@ -81,11 +81,18 @@ module.exports = NodeHelper.create({
       busStop = self.config.busStations[index];
       if (busStop.type != 'velib') {
         url = self.config.apiBase + busStop.type + '/' + busStop.line + '/stations/' + busStop.stations + '?destination=' + busStop.destination; // get schedule for that bus
+        self.getResponse(url, self.processBus.bind(this));
       } else {
         url = self.config.apiVelib + '&q=' + busStop.stations;
+        self.getResponse(url, self.processVelib.bind(this));
       }
-      self.getResponse(url, self.processBus.bind(this));
     }
+  },
+
+  processVelib: function(data) {
+    this.velib = {};
+    console.log ('*** response Velib');
+    console.log (data);
   },
 
   processBus: function(data) {
