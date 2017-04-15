@@ -152,12 +152,16 @@ Module.register("MMM-Paris-RATP-PG",{
           var station = this.velibHistory[stop.stations];
           var velibStation = document.createElement("td");
           velibStation.className = "align-left";
-          velibStation.innerHTML = (stop.label ||  station.name) + ' ' + station.total;
+          velibStation.innerHTML = station.total;
           row.appendChild(velibStation);
           var velibStatus = document.createElement("td");
-          velibStatus.className = "align-right bright";
+          velibStatus.className = "bright";
           velibStatus.innerHTML = station.bike + ' velibs ' + station.empty + ' spaces';
           row.appendChild(velibStatus);
+          var velibName = document.createElement("td");
+          velibName.className = "align-right";
+          velibName.innerHTML =  stop.label ||  station.name;
+          row.appendChild(velibName);
           table.appendChild(row);
           break;
       }
