@@ -91,8 +91,16 @@ module.exports = NodeHelper.create({
 
   processVelib: function(data) {
     this.velib = {};
-    console.log ('*** response Velib');
-    console.log (data);
+    //fields: {"status": "OPEN", "contract_name": "Paris", "name": "14111 - DENFERT-ROCHEREAU CASSINI", "bonus": "False", "bike_stands": 24, "number": 14111, "last_update": "2017-04-15T12:14:25+00:00", "available_bike_stands": 24, "banking": "True", "available_bikes": 0, "address": "18 RUE CASSINI - 75014 PARIS", "position": [48.8375492922, 2.33598303047]}
+    var record = data.records[0].fields;
+    this.velib.id = record.number;
+    this.velib.name = record.name;
+    this.velib.total = record.bike_stands;
+    this.velib.empty = record.available_bike_stands;
+    this.velib.bike = record.available.available_bikes;
+    this.velib.lastUpdate = record.last_update;
+    this.velib.loaded = true;
+    this.sendSocketNotification("VELIB", this.velib);
   },
 
   processBus: function(data) {
