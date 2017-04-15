@@ -148,10 +148,10 @@ Module.register("MMM-Paris-RATP-PG",{
           }
           break;
         case 'velib':
-          console.log (' *** velib stop handling: ' + stop.id);
+          console.log (' *** velib stop handling: ' + stop.stations);
           console.log (this.velibHistory);
           row = document.createElement("tr");
-          var station = this.velibHistory[stop.id];
+          var station = this.velibHistory[stop.stations];
           var velibStation = document.createElement("td");
           velibStation.className = "align-left";
           velibStation.innerHTML = station.name + ' ' + station.total;
