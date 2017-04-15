@@ -97,7 +97,7 @@ module.exports = NodeHelper.create({
     this.velib.name = record.name;
     this.velib.total = record.bike_stands;
     this.velib.empty = record.available_bike_stands;
-    this.velib.bike = record.available.available_bikes;
+    this.velib.bike = record.available_bikes;
     this.velib.lastUpdate = record.last_update;
     this.velib.loaded = true;
     this.sendSocketNotification("VELIB", this.velib);
