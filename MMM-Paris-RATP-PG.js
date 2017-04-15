@@ -148,6 +148,8 @@ Module.register("MMM-Paris-RATP-PG",{
           }
           break;
         case 'velib':
+          console.log (' *** velib stop handling: ' + stop.id);
+          console.log (this.velibHistory);
           row = document.createElement("tr");
           var station = this.velibHistory[stop.id];
           var velibStation = document.createElement("td");
@@ -174,6 +176,8 @@ Module.register("MMM-Paris-RATP-PG",{
         this.updateDom();
         break;
       case "VELIB":
+        console.log (' *** storing velib info');
+        console.log (payload);
         this.velibHistory[payload.id] = payload;
         this.loaded = true;
         this.updateDom();
