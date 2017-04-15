@@ -46,24 +46,17 @@ module.exports = NodeHelper.create({
     }, nextLoad);
   },
 
-  /* updateTimetable(transports)
-   * Calls processTrains on succesfull response.
-  */
-  updateTimetable: function() {
-    this.sendSocketNotification("UPDATE", { lastUpdate : new Date()});
-    for (var index in this.config.busStations) {
-      var busStop = this.config.busStations[index];
-      var url = this.config.apiBase + busStop.type + '/' + busStop.line + '/stations/' + busStop.stations + '?destination=' + busStop.destination; // get schedule for that bus
-      var self = this;
-      var retry = true;
-      if (this.config.debug) { console.log(' *** fetching: ' + url); }
-      unirest.get(url)
-        .headers({
+  getResponse: function(_url, _processFunction) {
+    var self = this;
+    var retry = true;
+    if (this.config.debug) { console.log (' *** fetching: ' + _url);}
+      unirest.get(_url)
+        .header({
           'Accept': 'application/json;charset=utf-8'
         })
-        .end(function (response) {
+        .end(function(response){
           if (response && response.body) {
-            self.processBus(response.body);
+            self._processFunction(response.body);
           } else {
             if (self.config.debug) {
               if (response) {
@@ -74,10 +67,18 @@ module.exports = NodeHelper.create({
               }
             }
           }
-          if (retry) {
-            self.scheduleUpdate((self.loaded) ? -1 : this.config.retryDelay);
-          }
-        });
+      })
+  },
+
+  /* updateTimetable(transports)
+   * Calls processTrains on succesfull response.
+  */
+  updateTimetable: function() {
+    this.sendSocketNotification("UPDATE", { lastUpdate : new Date()});
+    for (var index in this.config.busStations) {
+      var busStop = this.config.busStations[index];
+      var url = this.config.apiBase + busStop.type + '/' + busStop.line + '/stations/' + busStop.stations + '?destination=' + busStop.destination; // get schedule for that bus
+      this.getResponse(url, this.processBus);
     }
   },
 

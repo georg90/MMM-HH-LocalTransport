@@ -28,6 +28,7 @@ Module.register("MMM-Paris-RATP-PG",{
     oldUpdateOpacity: 0.5, //when a displayed time age has reached a threshold their display turns darker (i.e. less reliable)
     oldThreshold: 0.1, //if (1+x) of the updateInterval has passed since the last refresh... then the oldUpdateOpacity is applied
     debug: false, //console.log more things to help debugging
+    apiVelib: 'https://opendata.paris.fr/api/records/1.0/search/?dataset=stations-velib-disponibilites-en-temps-reel' // add &q=141111 to get info of that station
   },
   
   // Define required scripts.
