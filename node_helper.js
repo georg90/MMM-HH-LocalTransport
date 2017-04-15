@@ -56,7 +56,7 @@ module.exports = NodeHelper.create({
         })
         .end(function(response){
           if (response && response.body) {
-            self._processFunction(response.body);
+            _processFunction(response.body);
           } else {
             if (self.config.debug) {
               if (response) {
