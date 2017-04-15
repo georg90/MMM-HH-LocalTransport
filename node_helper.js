@@ -46,24 +46,17 @@ module.exports = NodeHelper.create({
     }, nextLoad);
   },
 
-  /* updateTimetable(transports)
-   * Calls processTrains on succesfull response.
-  */
-  updateTimetable: function() {
-    this.sendSocketNotification("UPDATE", { lastUpdate : new Date()});
-    for (var index in this.config.busStations) {
-      var busStop = this.config.busStations[index];
-      var url = this.config.apiBase + busStop.type + '/' + busStop.line + '/stations/' + busStop.stations + '?destination=' + busStop.destination; // get schedule for that bus
-      var self = this;
-      var retry = true;
-      if (this.config.debug) { console.log(' *** fetching: ' + url); }
-      unirest.get(url)
-        .headers({
+  getResponse: function(_url, _processFunction) {
+    var self = this;
+    var retry = true;
+    if (this.config.debug) { console.log (' *** fetching: ' + _url);}
+      unirest.get(_url)
+        .header({
           'Accept': 'application/json;charset=utf-8'
         })
-        .end(function (response) {
+        .end(function(response){
           if (response && response.body) {
-            self.processBus(response.body);
+            _processFunction(response.body);
           } else {
             if (self.config.debug) {
               if (response) {
@@ -74,11 +67,40 @@ module.exports = NodeHelper.create({
               }
             }
           }
-          if (retry) {
-            self.scheduleUpdate((self.loaded) ? -1 : this.config.retryDelay);
-          }
-        });
+      })
+  },
+
+  /* updateTimetable(transports)
+   * Calls processTrains on successful response.
+  */
+  updateTimetable: function() {
+    var self = this;
+    var url, busStop;
+    self.sendSocketNotification("UPDATE", { lastUpdate : new Date()});
+    for (var index in self.config.busStations) {
+      busStop = self.config.busStations[index];
+      if (busStop.type != 'velib') {
+        url = self.config.apiBase + busStop.type + '/' + busStop.line + '/stations/' + busStop.stations + '?destination=' + busStop.destination; // get schedule for that bus
+        self.getResponse(url, self.processBus.bind(this));
+      } else {
+        url = self.config.apiVelib + '&q=' + busStop.stations;
+        self.getResponse(url, self.processVelib.bind(this));
+      }
     }
+  },
+
+  processVelib: function(data) {
+    this.velib = {};
+    //fields: {"status": "OPEN", "contract_name": "Paris", "name": "14111 - DENFERT-ROCHEREAU CASSINI", "bonus": "False", "bike_stands": 24, "number": 14111, "last_update": "2017-04-15T12:14:25+00:00", "available_bike_stands": 24, "banking": "True", "available_bikes": 0, "address": "18 RUE CASSINI - 75014 PARIS", "position": [48.8375492922, 2.33598303047]}
+    var record = data.records[0].fields;
+    this.velib.id = record.number;
+    this.velib.name = record.name;
+    this.velib.total = record.bike_stands;
+    this.velib.empty = record.available_bike_stands;
+    this.velib.bike = record.available_bikes;
+    this.velib.lastUpdate = record.last_update;
+    this.velib.loaded = true;
+    this.sendSocketNotification("VELIB", this.velib);
   },
 
   processBus: function(data) {
