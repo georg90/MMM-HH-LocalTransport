@@ -1,4 +1,4 @@
-.hhtransport {
+.paristransport {
   font-size: 75%;
   line-height: 65px;
   display: inline-block;
@@ -7,10 +7,10 @@
   transform: translate(0, -3px);
 }
 
-.hhtransport table {
+.paristransport table {
     width: 400px;
 }
 
-.hhtransport .red {
+.paristransport .red {
     color: #FF0000
 }

@@ -1,137 +1,117 @@
 /* Magic Mirror
- * Module: HH-LocalTransport
+ * Module: MMM-Paris_RATP-PG
  *
- * By Georg Peters (https://lane6.de)
- * based on a Script from Benjamin Angst http://www.beny.ch
+ * script from da4throux
+ * based on a Script from  Georg Peters (https://lane6.de)
+ * band a Script from Benjamin Angst http://www.beny.ch
  * MIT Licensed.
+ *
+ * For the time being just the first bus from the config file
  */
 
 const NodeHelper = require("node_helper");
-const forge = require('node-forge');
 const unirest = require('unirest');
 
 module.exports = NodeHelper.create({
+  start: function () {
+    this.started = false;
+  },
+  
+  socketNotificationReceived: function(notification, payload) {
+    const self = this;
+    if (notification === 'SET_CONFIG' && this.started == false) {
+      this.config = payload;	     
+      if (this.config.debug) {
+        console.log (' *** config set in node_helper: ');
+        console.log ( payload );
+      }
+      this.started = true;
+      self.scheduleUpdate(this.config.initialLoadDelay);
+    };
+  },
 
-		start: function () {
-	    this.started = false;
-	  	},
+  /* scheduleUpdate()
+   * Schedule next update.
+   * argument delay number - Millis econds before next update. If empty, this.config.updateInterval is used.
+  */
+  scheduleUpdate: function(delay) {
+    var nextLoad = this.config.updateInterval;
+    if (typeof delay !== "undefined" && delay >= 0) {
+      nextLoad = delay;
+    }
+    var self = this;
+    clearTimeout(this.updateTimer);
+    this.updateTimer = setTimeout(function() {
+      self.updateTimetable();
+    }, nextLoad);
+  },
 
-	  	/* getSignature(payload)
-		 * Create authentication for HVV (Geofox) API
-		 * You'll need to request the access at their website. It's still in BETA!
-		 */
-	    getSignature: function(payload) {
-			var hmac = forge.hmac.create();
-			hmac.start('sha1', this.config.apiKey);
-			hmac.update(forge.util.encodeUtf8(JSON.stringify(payload)));
-			var hash = hmac.digest().toHex();
-			var sig = new Buffer(hash, 'hex').toString('base64');
-			//console.log('sig: ', sig);
-			return sig;
-		},
+  getResponse: function(_url, _processFunction) {
+    var self = this;
+    var retry = true;
+    if (this.config.debug) { console.log (' *** fetching: ' + _url);}
+      unirest.get(_url)
+        .header({
+          'Accept': 'application/json;charset=utf-8'
+        })
+        .end(function(response){
+          if (response && response.body) {
+            _processFunction(response.body);
+          } else {
+            if (self.config.debug) {
+              if (response) {
+                console.log (' *** partial response received');
+                console.log (response);
+              } else {
+                console.log (' *** no response received');
+              }
+            }
+          }
+      })
+  },
 
-		/* updateTimetable(transports)
-		 * Calls processTrains on succesfull response.
-		 */
-		updateTimetable: function() {
-			var url = this.config.apiBase + 'departureList' // List all departures for given station
-			var self = this;
-			var retry = true;
-			var data = {
-			  "station": {
-			  "type": "STATION",
-			  "id": this.config.id,
-			  },
-			   "time": {
-			   },
-			   "maxList": this.config.maximumEntries,
-			   "useRealtime": this.config.useRealtime,
-			   "maxTimeOffset": this.config.maxTimeOffset
-			};
+  /* updateTimetable(transports)
+   * Calls processTrains on successful response.
+  */
+  updateTimetable: function() {
+    var self = this;
+    var url, busStop;
+    self.sendSocketNotification("UPDATE", { lastUpdate : new Date()});
+    for (var index in self.config.busStations) {
+      busStop = self.config.busStations[index];
+      if (busStop.type != 'velib') {
+        url = self.config.apiBase + busStop.type + '/' + busStop.line + '/stations/' + busStop.stations + '?destination=' + busStop.destination; // get schedule for that bus
+        self.getResponse(url, self.processBus.bind(this));
+      } else {
+        url = self.config.apiVelib + '&q=' + busStop.stations;
+        self.getResponse(url, self.processVelib.bind(this));
+      }
+    }
+  },
 
-		    unirest.post(url)
-		    .headers({
-		      'Content-Type': 'application/json;charset=UTF-8',
-		      'geofox-auth-user': this.config.apiUser,
-		      'geofox-auth-signature': self.getSignature(data)
-		    })
-		    .send(JSON.stringify(data))
-		    .end(function (r) {
-		    	if (r.error) {
-		    		self.updateDom(this.config.animationSpeed);
-		    		//console.log(self.name + " : " + r.error);
-		    		retry = false;
-		    	}
-		    	else {
-		    		//console.log("body: ", JSON.stringify(r.body));
-		    		self.processTrains(r.body);
-		    	}
+  processVelib: function(data) {
+    this.velib = {};
+    //fields: {"status": "OPEN", "contract_name": "Paris", "name": "14111 - DENFERT-ROCHEREAU CASSINI", "bonus": "False", "bike_stands": 24, "number": 14111, "last_update": "2017-04-15T12:14:25+00:00", "available_bike_stands": 24, "banking": "True", "available_bikes": 0, "address": "18 RUE CASSINI - 75014 PARIS", "position": [48.8375492922, 2.33598303047]}
+    var record = data.records[0].fields;
+    this.velib.id = record.number;
+    this.velib.name = record.name;
+    this.velib.total = record.bike_stands;
+    this.velib.empty = record.available_bike_stands;
+    this.velib.bike = record.available_bikes;
+    this.velib.lastUpdate = record.last_update;
+    this.velib.loaded = true;
+    this.sendSocketNotification("VELIB", this.velib);
+  },
 
-		    	if (retry) {
-					self.scheduleUpdate((self.loaded) ? -1 : this.config.retryDelay);
-				}
-		    });
-		},
+  processBus: function(data) {
+    this.bus = {};
+    var schedules = data.response.schedules;
+    var informations = data.response.informations;
+    this.bus.id = informations.line + '/' + (informations.station.id_station || informations.station.id) + '/' + (informations.destination.id_destination || informations.destination.id);
+    this.bus.schedules = schedules;
+    this.bus.lastUpdate = new Date();
+    this.loaded = true;
+    this.sendSocketNotification("BUS", this.bus);
+  }
 
-		/* processTrains(data)
-		 * Uses the received data to set the various values.
-		 * Keep the correct date (datetime) for later use.
-		 * TODO: delay is not yet implemented into the HVV API as extra field.
-		 */
-		processTrains: function(data) {
-			this.trains = [];
-			var time = data.time.time.split(':')
-			hours = time[0];
-			mins = time[1];
-			var datetime = new Date(this.parseDate(data.time.date));
-			datetime.setHours(hours);
-			datetime.setMinutes(mins);
-			for (var i = 0, count = data.departures.length; i < count; i++) {
-
-				var trains = data.departures[i];
-
-				var departureTime = datetime.setMinutes(datetime.getMinutes() + trains.timeOffset);
-				this.trains.push({
-
-					departureTimestamp: trains.timeOffset,
-					delay: '',
-					name: trains.line.name,
-					to: trains.line.direction
-
-				});
-			}
-			this.loaded = true;
-			this.sendSocketNotification("TRAINS", this.trains);
-		},
-
-		/* scheduleUpdate()
-		 * Schedule next update.
-		 * argument delay number - Millis econds before next update. If empty, this.config.updateInterval is used.
-		 */
-		scheduleUpdate: function(delay) {
-			var nextLoad = this.config.updateInterval;
-			if (typeof delay !== "undefined" && delay >= 0) {
-				nextLoad = delay;
-			}
-
-			var self = this;
-			clearTimeout(this.updateTimer);
-			this.updateTimer = setTimeout(function() {
-				self.updateTimetable();
-			}, nextLoad);
-		},
-
-		parseDate: function(input) {
-		  	var parts = input.match(/(\d+)/g);
-		  	return new Date(parts[2], parts[1]-1, parts[0]);
-		},
-
-		socketNotificationReceived: function(notification, payload) {
-		  const self = this;
-		  if (notification === 'CONFIG' && this.started == false) {
-		    this.config = payload;	     
-		    this.started = true;
-		    self.scheduleUpdate(this.config.initialLoadDelay);
-		    };
-		  }
 });
