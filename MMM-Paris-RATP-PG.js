@@ -148,13 +148,11 @@ Module.register("MMM-Paris-RATP-PG",{
           }
           break;
         case 'velib':
-          console.log (' *** velib stop handling: ' + stop.stations);
-          console.log (this.velibHistory);
           row = document.createElement("tr");
           var station = this.velibHistory[stop.stations];
           var velibStation = document.createElement("td");
           velibStation.className = "align-left";
-          velibStation.innerHTML = station.name + ' ' + station.total;
+          velibStation.innerHTML = (stop.label ||  station.name) + ' ' + station.total;
           row.appendChild(velibStation);
           var velibStatus = document.createElement("td");
           velibStatus.className = "align-right bright";
@@ -176,8 +174,6 @@ Module.register("MMM-Paris-RATP-PG",{
         this.updateDom();
         break;
       case "VELIB":
-        console.log (' *** storing velib info');
-        console.log (payload);
         this.velibHistory[payload.id] = payload;
         this.loaded = true;
         this.updateDom();
