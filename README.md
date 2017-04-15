@@ -59,6 +59,6 @@ Example:
 ```javascript
 busStations: [{type: 'bus', line: 38, stations: 2758, destination: 183, label: 'bus vers le Nord'}, 
                   {type: 'rers', line: 'B', stations: 62, destination: 4},
-		  {type: 'velib', stations' 05029, destination: 'leaving', label 'RER'}]
+		  {type: 'velib', stations: 05029, destination: 'leaving', label 'RER'}]
 ```
 # v1.1
