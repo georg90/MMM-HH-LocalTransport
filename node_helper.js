@@ -74,11 +74,12 @@ module.exports = NodeHelper.create({
    * Calls processTrains on succesfull response.
   */
   updateTimetable: function() {
-    this.sendSocketNotification("UPDATE", { lastUpdate : new Date()});
-    for (var index in this.config.busStations) {
-      var busStop = this.config.busStations[index];
-      var url = this.config.apiBase + busStop.type + '/' + busStop.line + '/stations/' + busStop.stations + '?destination=' + busStop.destination; // get schedule for that bus
-      this.getResponse(url, this.processBus);
+    var self = this;
+    self.sendSocketNotification("UPDATE", { lastUpdate : new Date()});
+    for (var index in self.config.busStations) {
+      var busStop = self.config.busStations[index];
+      var url = self.config.apiBase + busStop.type + '/' + busStop.line + '/stations/' + busStop.stations + '?destination=' + busStop.destination; // get schedule for that bus
+      self.getResponse(url, self.processBus.bind(this));
     }
   },
 
