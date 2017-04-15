@@ -71,14 +71,19 @@ module.exports = NodeHelper.create({
   },
 
   /* updateTimetable(transports)
-   * Calls processTrains on succesfull response.
+   * Calls processTrains on successful response.
   */
   updateTimetable: function() {
     var self = this;
+    var url, busStop;
     self.sendSocketNotification("UPDATE", { lastUpdate : new Date()});
     for (var index in self.config.busStations) {
-      var busStop = self.config.busStations[index];
-      var url = self.config.apiBase + busStop.type + '/' + busStop.line + '/stations/' + busStop.stations + '?destination=' + busStop.destination; // get schedule for that bus
+      busStop = self.config.busStations[index];
+      if (busStop.type != 'velib') {
+        url = self.config.apiBase + busStop.type + '/' + busStop.line + '/stations/' + busStop.stations + '?destination=' + busStop.destination; // get schedule for that bus
+      } else {
+        url = self.config.apiVelib + '&q=' + busStop.stations;
+      }
       self.getResponse(url, self.processBus.bind(this));
     }
   },
