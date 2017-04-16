@@ -218,7 +218,7 @@ Module.register("MMM-Paris-RATP-PG",{
         break;
       case "VELIB":
         if (!this.velibHistory[payload.id]) {
-          this.velibHistory[payload.id] = JSON.parse(localStorage[payload.id]) ? localStorage[payload.id] : [];
+          this.velibHistory[payload.id] = localStorage[payload.id] ? JSON.parse(localStorage[payload.id]) : [];
           this.velibHistory[payload.id].push(payload);
           localStorage[payload.id] = JSON.stringify(this.velibHistory[payload.id]);
           if (this.config.debug) {console.log (' *** size of velib History for ' + payload.id + ' is: ' + this.velibHistory[payload.id].length);}
