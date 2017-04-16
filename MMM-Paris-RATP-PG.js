@@ -80,7 +80,7 @@ Module.register("MMM-Paris-RATP-PG",{
       wrapper.className = "dimmed light small";
       return wrapper;
     } else {
-      wrapper.className = "parisTransport";
+      wrapper.className = "paristransport";
     }
     
     var table = document.createElement("table");
