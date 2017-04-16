@@ -189,6 +189,8 @@ Module.register("MMM-Paris-RATP-PG",{
                   previousX = x;
                 }
               }
+              var bodyStyle = window.getComputedStyle(document.getElementsByTagName('body')[0], null);
+              ctx.font = bodyStyle.getPropertyValue(('font-size')) + ctx.font.split(' ').slice(-1)[0];
               ctx.fillStyle = 'grey';
               ctx.textAlign = 'center';
               ctx.fillText(stop.label || station.name, trendGraph.width / 2, 30);
