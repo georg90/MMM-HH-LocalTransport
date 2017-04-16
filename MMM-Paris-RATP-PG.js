@@ -166,6 +166,8 @@ Module.register("MMM-Paris-RATP-PG",{
             velibName.innerHTML = stop.label || station.name;
             row.appendChild(velibName);
             if (this.config.debug) { // no need to show to all
+              var rowTrend = document.createElement("tr");
+              var cellTrend = document.createElement("td");
               var trendGraph = document.createElement('canvas');
               trendGraph.className = "velibTrendGraph";
               trendGraph.width  = 400;
@@ -173,7 +175,11 @@ Module.register("MMM-Paris-RATP-PG",{
               var ctx = trendGraph.getContext('2d');
               ctx.fillStyle = "green";
               ctx.fillRect(10, 10, 100, 100);
-              wrapper.appendChild(trendGraph);
+	      cellTrend.colSpan = "3";
+              cellTrend.appendChild(trendGraph);
+              rowTrend.appendChild(cellTrend);
+              table.appendChild(rowTrend);
+              //wrapper.appendChild(trendGraph);
             }
           } else {
             var message = document.createElement("td");
