@@ -172,7 +172,7 @@ Module.register("MMM-Paris-RATP-PG",{
               trendGraph.className = "velibTrendGraph";
               trendGraph.width  = 400;
               trendGraph.height = 100;
-              trendGraph.timeScale = 60 * 60; // in nb of seconds, the previous hour
+              trendGraph.timeScale = this.config.velibTrendTimeScale || 60 * 60; // in nb of seconds, the previous hour
               var ctx = trendGraph.getContext('2d');
               var currentStation = this.velibHistory[stop.stations];
               var now = new Date();
@@ -183,7 +183,7 @@ Module.register("MMM-Paris-RATP-PG",{
                   var x = (1 - dataTimeStamp / trendGraph.timeScale) * trendGraph.width;
                   var y = currentStation[dataIndex].bike / currentStation[dataIndex].total * trendGraph.height;
                   ctx.fillStyle =  'hsl(' + 360 * Math.random() + ', 50%, 50%)';
-                  ctx.fillRect(x, trendGraph.height - y, previousX, trendGraph.height);
+                  ctx.fillRect(x, trendGraph.height - y, previousX - x, y);
                   previousX = x;
                 }
               }
@@ -217,14 +217,19 @@ Module.register("MMM-Paris-RATP-PG",{
         if (!this.velibHistory[payload.id]) {
           this.velibHistory[payload.id] = [];
           this.velibHistory[payload.id].push(payload);
-          console.log (' *** size of velib History for ' + payload.id + ' is: ' + this.velibHistory[payload.id].length);
+          if (this.config.debug) {console.log (' *** size of velib History for ' + payload.id + ' is: ' + this.velibHistory[payload.id].length);}
           this.updateDom();
         } else if (this.velibHistory[payload.id][this.velibHistory[payload.id].length - 1].lastUpdate != payload.lastUpdate) {
           this.velibHistory[payload.id].push(payload);
           this.updateDom();
-          console.log (' *** size of velib History for ' + payload.id + ' is: ' + this.velibHistory[payload.id].length);
+          if (this.config.debug) {
+            console.log (' *** size of velib History for ' + payload.id + ' is: ' + this.velibHistory[payload.id].length);
+            console.log (this.velibHistory[payload.id]);
+          }
         } else {
-          console.log (' *** redundant velib payload for ' + payload.id + ' with time ' + payload.lastUpdate + ' && ' + this.velibHistory[payload.id][this.velibHistory[payload.id].length - 1].lastUpdate );
+          if (this.config.debug) {
+            console.log(' *** redundant velib payload for ' + payload.id + ' with time ' + payload.lastUpdate + ' && ' + this.velibHistory[payload.id][this.velibHistory[payload.id].length - 1].lastUpdate);
+          }
         }
         break;
       case "UPDATE":
