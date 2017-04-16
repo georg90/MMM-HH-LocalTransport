@@ -134,7 +134,7 @@ Module.register("MMM-Paris-RATP-PG",{
                 depCell.innerHTML = comingBus.message;
               }
             }
-            row.appendChild(depCell);
+            row.appendChild(depCell.substr(0, this.config.maxLettersForTime));
             if ((new Date() - Date.parse(comingBusLastUpdate)) > (this.config.oldUpdateThreshold ? this.config.oldUpdateThreshold : (this.config.updateInterval * (1 + this.config.oldThreshold)) )) {
               busDestination.style.opacity = this.config.oldUpdateOpacity;
               depCell.style.opacity = this.config.oldUpdateOpacity;
@@ -194,10 +194,10 @@ Module.register("MMM-Paris-RATP-PG",{
               ctx.font = bodyStyle.getPropertyValue(('font-size')) + ' ' + ctx.font.split(' ').slice(-1)[0];
               ctx.fillStyle = 'grey';
               ctx.textAlign = 'center';
-              ctx.fillText(stop.label || station.name, trendGraph.width / 2, 30);
+              ctx.fillText(stop.label || station.name, trendGraph.width / 2, 25);
               ctx.textAlign = 'left';
               ctx.fillText(station.bike, 0, trendGraph.height);
-              ctx.fillText(station.empty, 0, 10);
+              ctx.fillText(station.empty, 0, 25;
               cellTrend.colSpan = '3'; //so that it takes the whole row
               cellTrend.appendChild(trendGraph);
               rowTrend.appendChild(cellTrend);
