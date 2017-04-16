@@ -153,9 +153,9 @@ Module.register("MMM-Paris-RATP-PG",{
           break;
         case 'velib':
           row = document.createElement("tr");
+          var station = this.velibHistory[stop.stations].slice(-1)[0];
           if (this.velibHistory[stop.stations]) {
             if (this.config.trendGraphOff) {
-              var station = this.velibHistory[stop.stations].slice(-1)[0];
               var velibStation = document.createElement("td");
               velibStation.className = "align-left";
               velibStation.innerHTML = station.total;
@@ -178,7 +178,6 @@ Module.register("MMM-Paris-RATP-PG",{
               trendGraph.timeScale = this.config.velibTrendTimeScale || 60 * 60; // in nb of seconds, the previous hour
               var ctx = trendGraph.getContext('2d');
               var currentStation = this.velibHistory[stop.stations];
-              var now = new Date();
               var previousX = trendGraph.width;
               for (var dataIndex = currentStation.length - 1; dataIndex >= 0 ; dataIndex--) { //start from most recent
                 var dataTimeStamp = (now - new Date(currentStation[dataIndex].lastUpdate)) / 1000; // time of the event in seconds ago
@@ -192,7 +191,7 @@ Module.register("MMM-Paris-RATP-PG",{
               }
               ctx.fillStyle = 'grey';
               ctx.textAlign = 'center';
-              ctx.fillText(currentStation.label, trendGraph.width / 2, 0);
+              ctx.fillText(stop.label || station.name, trendGraph.width / 2, 0);
               cellTrend.colSpan = '3'; //so that it takes the whole row
               cellTrend.appendChild(trendGraph);
               rowTrend.appendChild(cellTrend);
