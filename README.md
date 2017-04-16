@@ -4,10 +4,10 @@
 ###forked from MMM-HH-LocalTransport see more detailed information on gerog90 [blog](https://lane6.de).
 
 # Presentation
-A module to display the different buses and rers related to a list of station/destination, in order to avoid waiting to much for them when leaving home. It can also displays the available spaces & bikes in selected Velib stations.
+A module to display the different buses and rers related to a list of station/destination, in order to avoid waiting to much for them when leaving home. It can also displays the available spaces & bikes in selected Velib stations, along with the trend over the last hour (configurable).
 
 # Screenshot
-![screenshot](https://github.com/da4throux/MMM-Paris-RATP-PG/blob/master/MMM-Paris-RATP-PG.png)
+![screenshot](https://github.com/da4throux/MMM-Paris-RATP-PG/blob/master/MMM-Paris-RATP-PG2.png)
 
 # API
 
@@ -61,4 +61,4 @@ busStations: [{type: 'bus', line: 38, stations: 2758, destination: 183, label: '
                   {type: 'rers', line: 'B', stations: 62, destination: 4},
 		  {type: 'velib', stations: 05029, destination: 'leaving', label 'RER'}]
 ```
-# v1.1
+# v1.2
