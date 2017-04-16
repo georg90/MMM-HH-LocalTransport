@@ -79,6 +79,8 @@ Module.register("MMM-Paris-RATP-PG",{
       wrapper.innerHTML = "Loading connections ...";
       wrapper.className = "dimmed light small";
       return wrapper;
+    } else {
+      wrapper.className = "paristransport";
     }
     
     var table = document.createElement("table");
@@ -132,6 +134,7 @@ Module.register("MMM-Paris-RATP-PG",{
                 depCell.innerHTML = comingBus.message;
               }
             }
+            depCell.innerHTML = depCell.innerHTML.substr(0, this.config.maxLettersForTime);
             row.appendChild(depCell);
             if ((new Date() - Date.parse(comingBusLastUpdate)) > (this.config.oldUpdateThreshold ? this.config.oldUpdateThreshold : (this.config.updateInterval * (1 + this.config.oldThreshold)) )) {
               busDestination.style.opacity = this.config.oldUpdateOpacity;
@@ -153,18 +156,54 @@ Module.register("MMM-Paris-RATP-PG",{
           row = document.createElement("tr");
           if (this.velibHistory[stop.stations]) {
             var station = this.velibHistory[stop.stations].slice(-1)[0];
-            var velibStation = document.createElement("td");
-            velibStation.className = "align-left";
-            velibStation.innerHTML = station.total;
-            row.appendChild(velibStation);
-            var velibStatus = document.createElement("td");
-            velibStatus.className = "bright";
-            velibStatus.innerHTML = station.bike + ' velibs ' + station.empty + ' spaces';
-            row.appendChild(velibStatus);
-            var velibName = document.createElement("td");
-            velibName.className = "align-right";
-            velibName.innerHTML = stop.label || station.name;
-            row.appendChild(velibName);
+            if (this.config.trendGraphOff) {
+              var velibStation = document.createElement("td");
+              velibStation.className = "align-left";
+              velibStation.innerHTML = station.total;
+              row.appendChild(velibStation);
+              var velibStatus = document.createElement("td");
+              velibStatus.className = "bright";
+              velibStatus.innerHTML = station.bike + ' velibs ' + station.empty + ' spaces';
+              row.appendChild(velibStatus);
+              var velibName = document.createElement("td");
+              velibName.className = "align-right";
+              velibName.innerHTML = stop.label || station.name;
+              row.appendChild(velibName);
+            } else {
+              var rowTrend = document.createElement("tr");
+              var cellTrend = document.createElement("td");
+              var trendGraph = document.createElement('canvas');
+              trendGraph.className = "velibTrendGraph";
+              trendGraph.width  = this.config.velibTrendWidth || 400;
+              trendGraph.height = this.config.velibTrendHeight || 100;
+              trendGraph.timeScale = this.config.velibTrendTimeScale || 60 * 60; // in nb of seconds, the previous hour
+              var ctx = trendGraph.getContext('2d');
+              var currentStation = this.velibHistory[stop.stations];
+              var previousX = trendGraph.width;
+              for (var dataIndex = currentStation.length - 1; dataIndex >= 0 ; dataIndex--) { //start from most recent
+                var dataTimeStamp = (now - new Date(currentStation[dataIndex].lastUpdate)) / 1000; // time of the event in seconds ago
+                if (dataTimeStamp < trendGraph.timeScale) {
+                  var x = (1 - dataTimeStamp / trendGraph.timeScale) * trendGraph.width;
+                  var y = currentStation[dataIndex].bike / currentStation[dataIndex].total * trendGraph.height;
+                  ctx.fillStyle = 'white';
+                  ctx.fillRect(x, trendGraph.height - y, previousX - x + 1, Math.max(y, this.config.velibTrendMinLine || 1)); //a thin line even if it's zero
+                  previousX = x;
+                }
+              }
+              var bodyStyle = window.getComputedStyle(document.getElementsByTagName('body')[0], null);
+              console.log (' ************** size: ' + bodyStyle.getPropertyValue(('font-size')) + ' ' + ctx.font.split(' ').slice(-1)[0]);
+              ctx.font = bodyStyle.getPropertyValue(('font-size')) + ' ' + ctx.font.split(' ').slice(-1)[0];
+              ctx.fillStyle = 'grey';
+              ctx.textAlign = 'center';
+              ctx.fillText(stop.label || station.name, trendGraph.width / 2, 25);
+              ctx.textAlign = 'left';
+              ctx.fillText(station.bike, 0, trendGraph.height);
+              ctx.fillText(station.empty, 0, 25);
+              cellTrend.colSpan = '3'; //so that it takes the whole row
+              cellTrend.appendChild(trendGraph);
+              rowTrend.appendChild(cellTrend);
+              table.appendChild(rowTrend);
+            }
           } else {
             var message = document.createElement("td");
             message.className = "bright";
@@ -188,16 +227,23 @@ Module.register("MMM-Paris-RATP-PG",{
         break;
       case "VELIB":
         if (!this.velibHistory[payload.id]) {
-          this.velibHistory[payload.id] = [];
+          this.velibHistory[payload.id] = localStorage[payload.id] ? JSON.parse(localStorage[payload.id]) : [];
           this.velibHistory[payload.id].push(payload);
-          console.log (' *** size of velib History for ' + payload.id + ' is: ' + this.velibHistory[payload.id].length);
+          localStorage[payload.id] = JSON.stringify(this.velibHistory[payload.id]);
+          if (this.config.debug) {console.log (' *** size of velib History for ' + payload.id + ' is: ' + this.velibHistory[payload.id].length);}
           this.updateDom();
         } else if (this.velibHistory[payload.id][this.velibHistory[payload.id].length - 1].lastUpdate != payload.lastUpdate) {
           this.velibHistory[payload.id].push(payload);
+          localStorage[payload.id] = JSON.stringify(this.velibHistory[payload.id]);
           this.updateDom();
-          console.log (' *** size of velib History for ' + payload.id + ' is: ' + this.velibHistory[payload.id].length);
+          if (this.config.debug) {
+            console.log (' *** size of velib History for ' + payload.id + ' is: ' + this.velibHistory[payload.id].length);
+            console.log (this.velibHistory[payload.id]);
+          }
         } else {
-          console.log (' *** redundant velib payload for ' + payload.id + ' with time ' + payload.lastUpdate + ' && ' + this.velibHistory[payload.id][this.velibHistory[payload.id].length - 1].lastUpdate );
+          if (this.config.debug) {
+            console.log(' *** redundant velib payload for ' + payload.id + ' with time ' + payload.lastUpdate + ' && ' + this.velibHistory[payload.id][this.velibHistory[payload.id].length - 1].lastUpdate);
+          }
         }
         break;
       case "UPDATE":
