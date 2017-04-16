@@ -154,20 +154,7 @@ Module.register("MMM-Paris-RATP-PG",{
         case 'velib':
           row = document.createElement("tr");
           if (this.velibHistory[stop.stations]) {
-            var station = this.velibHistory[stop.stations].slice(-1)[0];
-            var velibStation = document.createElement("td");
-            velibStation.className = "align-left";
-            velibStation.innerHTML = station.total;
-            row.appendChild(velibStation);
-            var velibStatus = document.createElement("td");
-            velibStatus.className = "bright";
-            velibStatus.innerHTML = station.bike + ' velibs ' + station.empty + ' spaces';
-            row.appendChild(velibStatus);
-            var velibName = document.createElement("td");
-            velibName.className = "align-right";
-            velibName.innerHTML = stop.label || station.name;
-            row.appendChild(velibName);
-            if (this.config.debug) { // no need to show to all
+            if (this.config.trendGraphOff) {
               var rowTrend = document.createElement("tr");
               var cellTrend = document.createElement("td");
               var trendGraph = document.createElement('canvas');
@@ -180,20 +167,36 @@ Module.register("MMM-Paris-RATP-PG",{
               var now = new Date();
               var previousX = trendGraph.width;
               for (var dataIndex = currentStation.length - 1; dataIndex >= 0 ; dataIndex--) { //start from most recent
-                var dataTimeStamp = Math.round((now - new Date(currentStation[dataIndex].lastUpdate)) / 1000); // time of the event in seconds ago
+                var dataTimeStamp = (now - new Date(currentStation[dataIndex].lastUpdate)) / 1000; // time of the event in seconds ago
                 if (dataTimeStamp < trendGraph.timeScale) {
                   var x = (1 - dataTimeStamp / trendGraph.timeScale) * trendGraph.width;
                   var y = currentStation[dataIndex].bike / currentStation[dataIndex].total * trendGraph.height;
-                  //ctx.fillStyle =  'hsl(' + 360 * Math.random() + ', 50%, 50%)';
-                  ctx.fillStyle = "white";
+                  ctx.fillStyle = 'white';
                   ctx.fillRect(x, trendGraph.height - y, previousX - x, Math.max(y, this.config.velibTrendMinLine || 1)); //a thin line even if it's zero
                   previousX = x;
                 }
               }
-              cellTrend.colSpan = "3"; //so that it takes the whole row
+              ctx.fillStyle = 'grey';
+              ctx.textAlign = 'center';
+              ctx.fillText(currentStation.label, trendGraph.width / 2, 0);
+              cellTrend.colSpan = '3'; //so that it takes the whole row
               cellTrend.appendChild(trendGraph);
               rowTrend.appendChild(cellTrend);
               table.appendChild(rowTrend);
+            } else {
+              var station = this.velibHistory[stop.stations].slice(-1)[0];
+              var velibStation = document.createElement("td");
+              velibStation.className = "align-left";
+              velibStation.innerHTML = station.total;
+              row.appendChild(velibStation);
+              var velibStatus = document.createElement("td");
+              velibStatus.className = "bright";
+              velibStatus.innerHTML = station.bike + ' velibs ' + station.empty + ' spaces';
+              row.appendChild(velibStatus);
+              var velibName = document.createElement("td");
+              velibName.className = "align-right";
+              velibName.innerHTML = stop.label || station.name;
+              row.appendChild(velibName);
             }
           } else {
             var message = document.createElement("td");
