@@ -155,6 +155,20 @@ Module.register("MMM-Paris-RATP-PG",{
           row = document.createElement("tr");
           if (this.velibHistory[stop.stations]) {
             if (this.config.trendGraphOff) {
+              var station = this.velibHistory[stop.stations].slice(-1)[0];
+              var velibStation = document.createElement("td");
+              velibStation.className = "align-left";
+              velibStation.innerHTML = station.total;
+              row.appendChild(velibStation);
+              var velibStatus = document.createElement("td");
+              velibStatus.className = "bright";
+              velibStatus.innerHTML = station.bike + ' velibs ' + station.empty + ' spaces';
+              row.appendChild(velibStatus);
+              var velibName = document.createElement("td");
+              velibName.className = "align-right";
+              velibName.innerHTML = stop.label || station.name;
+              row.appendChild(velibName);
+            } else {
               var rowTrend = document.createElement("tr");
               var cellTrend = document.createElement("td");
               var trendGraph = document.createElement('canvas');
@@ -183,20 +197,6 @@ Module.register("MMM-Paris-RATP-PG",{
               cellTrend.appendChild(trendGraph);
               rowTrend.appendChild(cellTrend);
               table.appendChild(rowTrend);
-            } else {
-              var station = this.velibHistory[stop.stations].slice(-1)[0];
-              var velibStation = document.createElement("td");
-              velibStation.className = "align-left";
-              velibStation.innerHTML = station.total;
-              row.appendChild(velibStation);
-              var velibStatus = document.createElement("td");
-              velibStatus.className = "bright";
-              velibStatus.innerHTML = station.bike + ' velibs ' + station.empty + ' spaces';
-              row.appendChild(velibStatus);
-              var velibName = document.createElement("td");
-              velibName.className = "align-right";
-              velibName.innerHTML = stop.label || station.name;
-              row.appendChild(velibName);
             }
           } else {
             var message = document.createElement("td");
