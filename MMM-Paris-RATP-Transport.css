@@ -14,3 +14,8 @@
 .paristransport .red {
     color: #FF0000
 }
+
+.paristransport .velibTrendGraph {
+    border: 1px solid #aaa;
+    margin-top: 1ex;
+}

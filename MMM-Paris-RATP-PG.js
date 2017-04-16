@@ -165,6 +165,16 @@ Module.register("MMM-Paris-RATP-PG",{
             velibName.className = "align-right";
             velibName.innerHTML = stop.label || station.name;
             row.appendChild(velibName);
+            if (this.config.debug) { // no need to show to all
+              var trendGraph = document.createElement('canvas');
+              trendGraph.className = "velibTrendGraph";
+              trendGraph.width  = 400;
+              trendGraph.height = 100;
+              var ctx = trendGraph.getContext('2d');
+              ctx.fillStyle = "green";
+              ctx.fillRect(10, 10, 100, 100);
+              wrapper.appendChild(trendGraph);
+            }
           } else {
             var message = document.createElement("td");
             message.className = "bright";
