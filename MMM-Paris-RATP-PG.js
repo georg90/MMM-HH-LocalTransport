@@ -152,7 +152,7 @@ Module.register("MMM-Paris-RATP-PG",{
         case 'velib':
           row = document.createElement("tr");
           if (this.velibHistory[stop.stations]) {
-            var station = this.velibHistory[stop.stations][0];
+            var station = this.velibHistory[stop.stations].slice(-1)[0];
             var velibStation = document.createElement("td");
             velibStation.className = "align-left";
             velibStation.innerHTML = station.total;
