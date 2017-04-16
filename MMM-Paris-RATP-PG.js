@@ -190,10 +190,14 @@ Module.register("MMM-Paris-RATP-PG",{
                 }
               }
               var bodyStyle = window.getComputedStyle(document.getElementsByTagName('body')[0], null);
-              ctx.font = bodyStyle.getPropertyValue(('font-size')) + ctx.font.split(' ').slice(-1)[0];
+              console.log (' ************** size: ' + bodyStyle.getPropertyValue(('font-size')) + ' ' + ctx.font.split(' ').slice(-1)[0]);
+              ctx.font = bodyStyle.getPropertyValue(('font-size')) + ' ' + ctx.font.split(' ').slice(-1)[0];
               ctx.fillStyle = 'grey';
               ctx.textAlign = 'center';
               ctx.fillText(stop.label || station.name, trendGraph.width / 2, 30);
+              ctx.textAlign = 'left';
+              ctx.fillText(station.bike, 0, trendGraph.height);
+              ctx.fillText(station.empty, 0, 10);
               cellTrend.colSpan = '3'; //so that it takes the whole row
               cellTrend.appendChild(trendGraph);
               rowTrend.appendChild(cellTrend);
