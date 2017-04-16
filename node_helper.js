@@ -41,6 +41,7 @@ module.exports = NodeHelper.create({
     }
     var self = this;
     clearTimeout(this.updateTimer);
+    if (this.config.debug) { console.log (' *** scheduleUpdate set next update in ' + nextLoad);}
     this.updateTimer = setTimeout(function() {
       self.updateTimetable();
     }, nextLoad);
