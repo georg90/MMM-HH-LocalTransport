@@ -197,7 +197,7 @@ Module.register("MMM-Paris-RATP-PG",{
               ctx.fillText(stop.label || station.name, trendGraph.width / 2, 25);
               ctx.textAlign = 'left';
               ctx.fillText(station.bike, 0, trendGraph.height);
-              ctx.fillText(station.empty, 0, 25;
+              ctx.fillText(station.empty, 0, 25);
               cellTrend.colSpan = '3'; //so that it takes the whole row
               cellTrend.appendChild(trendGraph);
               rowTrend.appendChild(cellTrend);
