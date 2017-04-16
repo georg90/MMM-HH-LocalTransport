@@ -68,6 +68,9 @@ module.exports = NodeHelper.create({
               }
             }
           }
+          if (retry) {
+            self.scheduleUpdate((self.loaded) ? -1 : this.config.retryDelay);
+          }
       })
   },
 
