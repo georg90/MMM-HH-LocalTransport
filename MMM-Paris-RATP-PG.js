@@ -185,13 +185,13 @@ Module.register("MMM-Paris-RATP-PG",{
                   var x = (1 - dataTimeStamp / trendGraph.timeScale) * trendGraph.width;
                   var y = currentStation[dataIndex].bike / currentStation[dataIndex].total * trendGraph.height;
                   ctx.fillStyle = 'white';
-                  ctx.fillRect(x, trendGraph.height - y, previousX - x, Math.max(y, this.config.velibTrendMinLine || 1)); //a thin line even if it's zero
+                  ctx.fillRect(x, trendGraph.height - y, previousX - x + 1, Math.max(y, this.config.velibTrendMinLine || 1)); //a thin line even if it's zero
                   previousX = x;
                 }
               }
               ctx.fillStyle = 'grey';
               ctx.textAlign = 'center';
-              ctx.fillText(stop.label || station.name, trendGraph.width / 2, 0);
+              ctx.fillText(stop.label || station.name, trendGraph.width / 2, 30);
               cellTrend.colSpan = '3'; //so that it takes the whole row
               cellTrend.appendChild(trendGraph);
               rowTrend.appendChild(cellTrend);
