@@ -134,7 +134,8 @@ Module.register("MMM-Paris-RATP-PG",{
                 depCell.innerHTML = comingBus.message;
               }
             }
-            row.appendChild(depCell.substr(0, this.config.maxLettersForTime));
+            depCell.innerHTML = depCell.innerHTML.substr(0, this.config.maxLettersForTime);
+            row.appendChild(depCell);
             if ((new Date() - Date.parse(comingBusLastUpdate)) > (this.config.oldUpdateThreshold ? this.config.oldUpdateThreshold : (this.config.updateInterval * (1 + this.config.oldThreshold)) )) {
               busDestination.style.opacity = this.config.oldUpdateOpacity;
               depCell.style.opacity = this.config.oldUpdateOpacity;
