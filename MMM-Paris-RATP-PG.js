@@ -166,7 +166,7 @@ Module.register("MMM-Paris-RATP-PG",{
             velibName.innerHTML = stop.label || station.name;
             row.appendChild(velibName);
           } else {
-            var message = document.createlement("td");
+            var message = document.createElement("td");
             message.className = "bright";
             message.innerHTML = (stop.label || stop.stations) + ' no info yet';
             row.appendChild(message);
