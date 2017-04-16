@@ -176,19 +176,21 @@ Module.register("MMM-Paris-RATP-PG",{
               var ctx = trendGraph.getContext('2d');
               var currentStation = this.velibHistory[stop.stations];
               var now = new Date();
-              for (var dataIndex = 0; dataIndex < currentStation.length; dataIndex++) {
+              var previousX = trendGraph.width;
+              for (var dataIndex = currentStation.length - 1; dataIndex >= 0 ; dataIndex--) { //start from most recent
                 var dataTimeStamp = Math.round((now - new Date(currentStation[dataIndex].lastUpdate)) / 1000); // time of the event in seconds ago
                 if (dataTimeStamp < trendGraph.timeScale) {
-                  var x = (.9 - dataTimeStamp / trendGraph.timeScale )* trendGraph.width;
-                  var y = currentStation[dataIndex].bike / currentStation[dataIndex].total * trendGraph.height * 0.9;
-                  ctx.fillStyle = "red";
-                  ctx.fillRect(x - 5, 5, x + 5, 5 + y);
-                  cellTrend.colSpan = "3"; //so that it takes the whole row
-                  cellTrend.appendChild(trendGraph);
-                  rowTrend.appendChild(cellTrend);
-                  table.appendChild(rowTrend);
+                  var x = (1 - dataTimeStamp / trendGraph.timeScale) * trendGraph.width;
+                  var y = currentStation[dataIndex].bike / currentStation[dataIndex].total * trendGraph.height;
+                  ctx.fillStyle =  'hsl(' + 360 * Math.random() + ', 50%, 50%)';
+                  ctx.fillRect(x, trendGraph.height - y, previousX, trendGraph.height);
+                  previousX = x;
                 }
               }
+              cellTrend.colSpan = "3"; //so that it takes the whole row
+              cellTrend.appendChild(trendGraph);
+              rowTrend.appendChild(cellTrend);
+              table.appendChild(rowTrend);
             }
           } else {
             var message = document.createElement("td");
