@@ -187,12 +187,17 @@ Module.register("MMM-Paris-RATP-PG",{
         this.updateDom();
         break;
       case "VELIB":
-        var trend = this.velibHistory[payload.id];
-        if (!(trend && trend[trend.length - 1].lastUpdate == payload.lastUpdate)) {
-          trend.push(payload);
-          this.loaded = true;
+        if (!this.velibHistory[payload.id]) {
+          this.velibHistory[payload.id] = [];
+          this.velibHistory[payload.id].push(payload);
+          console.log (' *** size of velib History for ' + payload.id + ' is: ' + this.velibHistory[payload.id].length);
+          this.updateDom();
+        } else if (this.velibHistory[payload.id][this.velibHistory[payload.id].length - 1].lastUpdate != payload.lastUpdate) {
+          this.velibHistory[payload.id].push(payload);
           this.updateDom();
           console.log (' *** size of velib History for ' + payload.id + ' is: ' + this.velibHistory[payload.id].length);
+        } else {
+          console.log (' *** redundant velib payload for ' + payload.id + ' with time ' + payload.lastUpdate + ' && ' + this.velibHistory[payload.id][this.velibHistory[payload.id].length - 1].lastUpdate );
         }
         break;
       case "UPDATE":
