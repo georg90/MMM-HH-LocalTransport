@@ -172,14 +172,23 @@ Module.register("MMM-Paris-RATP-PG",{
               trendGraph.className = "velibTrendGraph";
               trendGraph.width  = 400;
               trendGraph.height = 100;
+              trendGraph.timeScale = 60 * 60; // in nb of seconds, the previous hour
               var ctx = trendGraph.getContext('2d');
-              ctx.fillStyle = "green";
-              ctx.fillRect(10, 10, 100, 100);
-	      cellTrend.colSpan = "3";
-              cellTrend.appendChild(trendGraph);
-              rowTrend.appendChild(cellTrend);
-              table.appendChild(rowTrend);
-              //wrapper.appendChild(trendGraph);
+              var currentStation = this.velibHistory[stop.stations];
+              var now = new Date();
+              for (var dataIndex = 0; dataIndex < currentStation.length; dataIndex++) {
+                var dataTimeStamp = Math.round((now - new Date(currentStation[dataIndex].lastUpdate)) / 1000); // time of the event in seconds ago
+                if (dataTimeStamp < trendGraph.timeScale) {
+                  var x = (.9 - dataTimeStamp / trendGraph.timeScale )* trendGraph.width;
+                  var y = currentStation[dataIndex].bike / currentStation[dataIndex].total * trendGraph.height * 0.9;
+                  ctx.fillStyle = "red";
+                  ctx.fillRect(x - 5, 5, x + 5, 5 + y);
+                  cellTrend.colSpan = "3"; //so that it takes the whole row
+                  cellTrend.appendChild(trendGraph);
+                  rowTrend.appendChild(cellTrend);
+                  table.appendChild(rowTrend);
+                }
+              }
             }
           } else {
             var message = document.createElement("td");
