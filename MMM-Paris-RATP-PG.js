@@ -28,7 +28,9 @@ Module.register("MMM-Paris-RATP-PG",{
     oldUpdateOpacity: 0.5, //when a displayed time age has reached a threshold their display turns darker (i.e. less reliable)
     oldThreshold: 0.1, //if (1+x) of the updateInterval has passed since the last refresh... then the oldUpdateOpacity is applied
     debug: false, //console.log more things to help debugging
-    apiVelib: 'https://opendata.paris.fr/api/records/1.0/search/?dataset=stations-velib-disponibilites-en-temps-reel' // add &q=141111 to get info of that station
+    apiVelib: 'https://opendata.paris.fr/api/records/1.0/search/?dataset=stations-velib-disponibilites-en-temps-reel', // add &q=141111 to get info of that station
+    velibGraphWidth: 400, //Height will follow
+    apiAutolib: 'https://opendata.paris.fr/explore/dataset/stations_et_espaces_autolib_de_la_metropole_parisienne/api/' ///add '?q=' mais pas d'info temps réel... pour l'instant
   },
   
   // Define required scripts.
@@ -149,19 +151,26 @@ Module.register("MMM-Paris-RATP-PG",{
           break;
         case 'velib':
           row = document.createElement("tr");
-          var station = this.velibHistory[stop.stations];
-          var velibStation = document.createElement("td");
-          velibStation.className = "align-left";
-          velibStation.innerHTML = station.total;
-          row.appendChild(velibStation);
-          var velibStatus = document.createElement("td");
-          velibStatus.className = "bright";
-          velibStatus.innerHTML = station.bike + ' velibs ' + station.empty + ' spaces';
-          row.appendChild(velibStatus);
-          var velibName = document.createElement("td");
-          velibName.className = "align-right";
-          velibName.innerHTML =  stop.label ||  station.name;
-          row.appendChild(velibName);
+          if (this.velibHistory[stop.stations]) {
+            var station = this.velibHistory[stop.stations].slice(-1)[0];
+            var velibStation = document.createElement("td");
+            velibStation.className = "align-left";
+            velibStation.innerHTML = station.total;
+            row.appendChild(velibStation);
+            var velibStatus = document.createElement("td");
+            velibStatus.className = "bright";
+            velibStatus.innerHTML = station.bike + ' velibs ' + station.empty + ' spaces';
+            row.appendChild(velibStatus);
+            var velibName = document.createElement("td");
+            velibName.className = "align-right";
+            velibName.innerHTML = stop.label || station.name;
+            row.appendChild(velibName);
+          } else {
+            var message = document.createElement("td");
+            message.className = "bright";
+            message.innerHTML = (stop.label || stop.stations) + ' no info yet';
+            row.appendChild(message);
+          }
           table.appendChild(row);
           break;
       }
@@ -178,9 +187,18 @@ Module.register("MMM-Paris-RATP-PG",{
         this.updateDom();
         break;
       case "VELIB":
-        this.velibHistory[payload.id] = payload;
-        this.loaded = true;
-        this.updateDom();
+        if (!this.velibHistory[payload.id]) {
+          this.velibHistory[payload.id] = [];
+          this.velibHistory[payload.id].push(payload);
+          console.log (' *** size of velib History for ' + payload.id + ' is: ' + this.velibHistory[payload.id].length);
+          this.updateDom();
+        } else if (this.velibHistory[payload.id][this.velibHistory[payload.id].length - 1].lastUpdate != payload.lastUpdate) {
+          this.velibHistory[payload.id].push(payload);
+          this.updateDom();
+          console.log (' *** size of velib History for ' + payload.id + ' is: ' + this.velibHistory[payload.id].length);
+        } else {
+          console.log (' *** redundant velib payload for ' + payload.id + ' with time ' + payload.lastUpdate + ' && ' + this.velibHistory[payload.id][this.velibHistory[payload.id].length - 1].lastUpdate );
+        }
         break;
       case "UPDATE":
         this.config.lastUpdate = payload.lastUpdate;

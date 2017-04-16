@@ -27,12 +27,12 @@ module.exports = NodeHelper.create({
       }
       this.started = true;
       self.scheduleUpdate(this.config.initialLoadDelay);
-    };
+    }
   },
 
   /* scheduleUpdate()
    * Schedule next update.
-   * argument delay number - Millis econds before next update. If empty, this.config.updateInterval is used.
+   * argument delay number - Milliseconds before next update. If empty, this.config.updateInterval is used.
   */
   scheduleUpdate: function(delay) {
     var nextLoad = this.config.updateInterval;
@@ -41,6 +41,7 @@ module.exports = NodeHelper.create({
     }
     var self = this;
     clearTimeout(this.updateTimer);
+    if (this.config.debug) { console.log (' *** scheduleUpdate set next update in ' + nextLoad);}
     this.updateTimer = setTimeout(function() {
       self.updateTimetable();
     }, nextLoad);
@@ -67,6 +68,9 @@ module.exports = NodeHelper.create({
               }
             }
           }
+          if (retry) {
+            self.scheduleUpdate((self.loaded) ? -1 : this.config.retryDelay);
+          }
       })
   },
 
@@ -76,6 +80,7 @@ module.exports = NodeHelper.create({
   updateTimetable: function() {
     var self = this;
     var url, busStop;
+    if (this.config.debug) { console.log (' *** fetching update');}
     self.sendSocketNotification("UPDATE", { lastUpdate : new Date()});
     for (var index in self.config.busStations) {
       busStop = self.config.busStations[index];
