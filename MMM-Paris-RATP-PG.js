@@ -79,6 +79,8 @@ Module.register("MMM-Paris-RATP-PG",{
       wrapper.innerHTML = "Loading connections ...";
       wrapper.className = "dimmed light small";
       return wrapper;
+    } else {
+      wrapper.className = "parisTransport";
     }
     
     var table = document.createElement("table");
@@ -170,8 +172,8 @@ Module.register("MMM-Paris-RATP-PG",{
               var cellTrend = document.createElement("td");
               var trendGraph = document.createElement('canvas');
               trendGraph.className = "velibTrendGraph";
-              trendGraph.width  = 400;
-              trendGraph.height = 100;
+              trendGraph.width  = this.config.velibTrendWidth || 400;
+              trendGraph.height = this.config.velibTrendHeight || 100;
               trendGraph.timeScale = this.config.velibTrendTimeScale || 60 * 60; // in nb of seconds, the previous hour
               var ctx = trendGraph.getContext('2d');
               var currentStation = this.velibHistory[stop.stations];
@@ -182,8 +184,9 @@ Module.register("MMM-Paris-RATP-PG",{
                 if (dataTimeStamp < trendGraph.timeScale) {
                   var x = (1 - dataTimeStamp / trendGraph.timeScale) * trendGraph.width;
                   var y = currentStation[dataIndex].bike / currentStation[dataIndex].total * trendGraph.height;
-                  ctx.fillStyle =  'hsl(' + 360 * Math.random() + ', 50%, 50%)';
-                  ctx.fillRect(x, trendGraph.height - y, previousX - x, y);
+                  //ctx.fillStyle =  'hsl(' + 360 * Math.random() + ', 50%, 50%)';
+                  ctx.fillStyle = "white";
+                  ctx.fillRect(x, trendGraph.height - y, previousX - x, Math.max(y, this.config.velibTrendMinLine || 1)); //a thin line even if it's zero
                   previousX = x;
                 }
               }
