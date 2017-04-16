@@ -151,19 +151,26 @@ Module.register("MMM-Paris-RATP-PG",{
           break;
         case 'velib':
           row = document.createElement("tr");
-          var station = this.velibHistory[stop.stations][0];
-          var velibStation = document.createElement("td");
-          velibStation.className = "align-left";
-          velibStation.innerHTML = station.total;
-          row.appendChild(velibStation);
-          var velibStatus = document.createElement("td");
-          velibStatus.className = "bright";
-          velibStatus.innerHTML = station.bike + ' velibs ' + station.empty + ' spaces';
-          row.appendChild(velibStatus);
-          var velibName = document.createElement("td");
-          velibName.className = "align-right";
-          velibName.innerHTML =  stop.label ||  station.name;
-          row.appendChild(velibName);
+          if (this.velibHistory[stop.stations]) {
+            var station = this.velibHistory[stop.stations][0];
+            var velibStation = document.createElement("td");
+            velibStation.className = "align-left";
+            velibStation.innerHTML = station.total;
+            row.appendChild(velibStation);
+            var velibStatus = document.createElement("td");
+            velibStatus.className = "bright";
+            velibStatus.innerHTML = station.bike + ' velibs ' + station.empty + ' spaces';
+            row.appendChild(velibStatus);
+            var velibName = document.createElement("td");
+            velibName.className = "align-right";
+            velibName.innerHTML = stop.label || station.name;
+            row.appendChild(velibName);
+          } else {
+            var message = document.createlement("td");
+            message.className = "bright";
+            message.innerHTML = (stop.label || stop.stations) + ' no info yet';
+            row.appendChild(message);
+          }
           table.appendChild(row);
           break;
       }
