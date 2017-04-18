@@ -201,13 +201,13 @@ Module.register("MMM-Paris-RATP-PG",{
                       x = (1 - dataTimeStamp / trendGraph.timeScale) * trendGraph.width;
                     }
                     y = currentStation[dataIndex].bike / currentStation[dataIndex].total * trendGraph.height;
-                    ctx.strokeStyle = 'grey';
                     ctx.fillRect(x, trendGraph.height - y, previousX - x, Math.max(y, this.config.velibTrendMinLine || 1)); //a thin line even if it's zero
                     previousX = x;
                   }
                 }
               }
               if (this.config.velibTrendDay) {
+                ctx.strokeStyle = 'grey';
                 ctx.setLineDash([5, 15]);
                 ctx.beginPath();
                 ctx.moveTo(2/3 * trendGraph.width, 0);
