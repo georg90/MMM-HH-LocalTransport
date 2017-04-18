@@ -214,8 +214,8 @@ Module.register("MMM-Paris-RATP-PG",{
               ctx.textAlign = 'center';
               ctx.fillText(stop.label || station.name, trendGraph.width / 2, Math.round(trendGraph.height / 5));
               ctx.textAlign = 'left';
-              ctx.fillText(station.bike, 0, trendGraph.height);
-              ctx.fillText(station.empty, 0, Math.round(trendGraph.height / 5));
+              ctx.fillText(station.bike, 10, trendGraph.height - 10);
+              ctx.fillText(station.empty, 10, Math.round(trendGraph.height / 5) + 10);
               if (this.config.velibTrendDay) {
                 ctx.font = Math.round(trendGraph.height / 10) + 'px ' + ctx.font.split(' ').slice(-1)[0];
                 ctx.fillText(Math.round(this.config.velibTrendZoom / 60) + 'mn', trendGraph.width * 5 / 6, trendGraph.height / 2);
@@ -229,6 +229,13 @@ Module.register("MMM-Paris-RATP-PG",{
                 ctx.moveTo(trendGraph.width / 3, 0);
                 ctx.lineTo(trendGraph.width / 3, 100);
                 ctx.stroke();
+                var hourMark = new Date(); var alpha;
+                hourMark.setMinutes(0); hourMark.setSeconds(0);
+                alpha = (hourMark - now + 24 * 60 * 60 * 1000 - this.config.velibTrendZoom * 1000) / (24 * 60 * 60 * 1000 - 2 * this.config.velibTrendZoom * 1000);
+                for (var h = 0; h < 24; h++) {
+                  ctx.font = Math.round(trendGraph.height / 12) + 'px';
+                  ctx.fillText((hourMark.getHours() + 24 - h) % 24, (2 - alpha - h / 24) * trendGraph.width / 3, h % 12 * trendGraph.height / 3 + trendGraph.height);
+                }
               }
               cellTrend.colSpan = '3'; //so that it takes the whole row
               cellTrend.appendChild(trendGraph);
