@@ -207,7 +207,19 @@ Module.register("MMM-Paris-RATP-PG",{
                   }
                 }
               }
+              var bodyStyle = window.getComputedStyle(document.getElementsByTagName('body')[0], null);
+              ctx.font = bodyStyle.getPropertyValue(('font-size')) + ' ' + ctx.font.split(' ').slice(-1)[0]; //00px sans-serif
+              ctx.font = Math.round(trendGraph.height / 5) + 'px ' + ctx.font.split(' ').slice(-1)[0];
+              ctx.fillStyle = 'grey';
+              ctx.textAlign = 'center';
+              ctx.fillText(stop.label || station.name, trendGraph.width / 2, Math.round(trendGraph.height / 5));
+              ctx.textAlign = 'left';
+              ctx.fillText(station.bike, 0, trendGraph.height);
+              ctx.fillText(station.empty, 0, Math.round(trendGraph.height / 5));
               if (this.config.velibTrendDay) {
+                ctx.font = Math.round(trendGraph.height / 10) + 'px ' + ctx.font.split(' ').slice(-1)[0];
+                ctx.fillText(Math.round(this.config.velibTrendZoom / 60) + 'mn', trendGraph.width * 5 / 6, trendGraph.height / 2);
+                ctx.fillText(Math.round(this.config.velibTrendZoom / 60) + 'mn', trendGraph.width / 6, trendGraph.height / 2);
                 ctx.strokeStyle = 'grey';
                 ctx.setLineDash([5, 15]);
                 ctx.beginPath();
@@ -218,15 +230,6 @@ Module.register("MMM-Paris-RATP-PG",{
                 ctx.lineTo(trendGraph.width / 3, 100);
                 ctx.stroke();
               }
-              var bodyStyle = window.getComputedStyle(document.getElementsByTagName('body')[0], null);
-              console.log (' ************** size: ' + bodyStyle.getPropertyValue(('font-size')) + ' ' + ctx.font.split(' ').slice(-1)[0]);
-              ctx.font = bodyStyle.getPropertyValue(('font-size')) + ' ' + ctx.font.split(' ').slice(-1)[0];
-              ctx.fillStyle = 'grey';
-              ctx.textAlign = 'center';
-              ctx.fillText(stop.label || station.name, trendGraph.width / 2, 25);
-              ctx.textAlign = 'left';
-              ctx.fillText(station.bike, 0, trendGraph.height);
-              ctx.fillText(station.empty, 0, 25);
               cellTrend.colSpan = '3'; //so that it takes the whole row
               cellTrend.appendChild(trendGraph);
               rowTrend.appendChild(cellTrend);
