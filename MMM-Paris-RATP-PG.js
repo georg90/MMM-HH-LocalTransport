@@ -200,7 +200,7 @@ Module.register("MMM-Paris-RATP-PG",{
                     } else {
                       x = (1 - dataTimeStamp / trendGraph.timeScale) * trendGraph.width;
                     }
-                    y = currentStation[dataIndex].bike / currentStation[dataIndex].total * trendGraph.height;
+                    y = currentStation[dataIndex].bike / currentStation[dataIndex].total * trendGraph.height * 4 / 5;
                     ctx.fillStyle = 'white';
                     ctx.fillRect(x, trendGraph.height - y, previousX - x, Math.max(y, this.config.velibTrendMinLine || 1)); //a thin line even if it's zero
                     previousX = x;
