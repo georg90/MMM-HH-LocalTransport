@@ -176,18 +176,35 @@ Module.register("MMM-Paris-RATP-PG",{
               trendGraph.className = "velibTrendGraph";
               trendGraph.width  = this.config.velibTrendWidth || 400;
               trendGraph.height = this.config.velibTrendHeight || 100;
-              trendGraph.timeScale = this.config.velibTrendTimeScale || 60 * 60; // in nb of seconds, the previous hour
+              trendGraph.timeScale = this.config.velibTrendDay ? 24 * 60 * 60 : this.config.velibTrendTimeScale || 60 * 60; // in nb of seconds, the previous hour
+              this.config.velibTrendZoom = this.config.velibTrendZoom || 30; //default zoom windows is 30 minutes for velibTrendDay
               var ctx = trendGraph.getContext('2d');
               var currentStation = this.velibHistory[stop.stations];
               var previousX = trendGraph.width;
+              var inTime = false;
               for (var dataIndex = currentStation.length - 1; dataIndex >= 0 ; dataIndex--) { //start from most recent
                 var dataTimeStamp = (now - new Date(currentStation[dataIndex].lastUpdate)) / 1000; // time of the event in seconds ago
-                if (dataTimeStamp < trendGraph.timeScale) {
-                  var x = (1 - dataTimeStamp / trendGraph.timeScale) * trendGraph.width;
-                  var y = currentStation[dataIndex].bike / currentStation[dataIndex].total * trendGraph.height;
-                  ctx.fillStyle = 'white';
-                  ctx.fillRect(x, trendGraph.height - y, previousX - x + 1, Math.max(y, this.config.velibTrendMinLine || 1)); //a thin line even if it's zero
-                  previousX = x;
+                if (dataTimeStamp < trendGraph.timeScale || inTime) {
+                  inTime = dataTimeStamp < trendGraph.timeScale; // compute the last one outside of the time window
+                  if (dataTimeStamp - trendGraph.timeScale < 10 * 60) { //take it only if it is within 10 minutes of the closing windows
+                    dataTimeStamp = min (dataTimeStamp, trendGraph.timeScale); //to be sure it does not exit the graph
+                    var x, y;
+                    if (this.config.velibTrendDay) {
+                      if ( dataTimeStamp  < this.config.velibTrendZoom ) { //1st third in zoom mode
+                        x = (1 - dataTimeStamp / this.config.velibTrendZoom / 3) * trendGraph.width;
+                      } else if (dataTimeStamp - trendGraph.timeScale > this.config.velibTrendZoom) { //middle in compressed mode
+                        x = (2/3 - (dataTimeStamp - this.config.velibTrendZoom) / trendGraph.timeScale / 3) * trendGraph.width;
+                      } else {
+                        x = (1 / 3 - (dataTimeStamp - trendGraph.timeScale + this.config.velibTrendZoom)/ trendGraph.timeScale / 3) * trendGraph.width;
+                      }
+                    } else {
+                      x = (1 - dataTimeStamp / trendGraph.timeScale) * trendGraph.width;
+                    }
+                    y = currentStation[dataIndex].bike / currentStation[dataIndex].total * trendGraph.height;
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(x, trendGraph.height - y, previousX - x, Math.max(y, this.config.velibTrendMinLine || 1)); //a thin line even if it's zero
+                    previousX = x;
+                  }
                 }
               }
               var bodyStyle = window.getComputedStyle(document.getElementsByTagName('body')[0], null);
