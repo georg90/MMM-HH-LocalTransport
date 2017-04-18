@@ -207,6 +207,16 @@ Module.register("MMM-Paris-RATP-PG",{
                   }
                 }
               }
+              if (this.config.velibTrendDay) {
+                ctx.setLineDash([5, 15]);
+                ctx.beginPath();
+                ctx.moveTo(2/3 * trendGraph.width, 0);
+                ctx.lineTo(2/3 * trendGraph.width, 100);
+                ctx.stroke();
+                ctx.moveTo(trendGraph.width / 3, 0);
+                ctx.lineTo(trendGraph.width / 3, 100);
+                ctx.stroke();
+              }
               var bodyStyle = window.getComputedStyle(document.getElementsByTagName('body')[0], null);
               console.log (' ************** size: ' + bodyStyle.getPropertyValue(('font-size')) + ' ' + ctx.font.split(' ').slice(-1)[0]);
               ctx.font = bodyStyle.getPropertyValue(('font-size')) + ' ' + ctx.font.split(' ').slice(-1)[0];
