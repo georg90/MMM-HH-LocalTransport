@@ -234,8 +234,9 @@ Module.register("MMM-Paris-RATP-PG",{
                 alpha = (hourMark - now + 24 * 60 * 60 * 1000 - this.config.velibTrendZoom * 1000) / (24 * 60 * 60 * 1000 - 2 * this.config.velibTrendZoom * 1000);
                 alpha = (hourMark - now + this.config.velibTrendZoom * 1000) / (24 * 60 * 60 * 1000) * trendGraph.width;
                 for (var h = 0; h < 24; h++) {
+                  ctx.fillStyle = 'red';
                   ctx.font = Math.round(trendGraph.height / 12) + 'px';
-                  ctx.fillText((hourMark.getHours() + 24 - h) % 24, (2 - h / 24) * trendGraph.width / 3 + alpha, h % 12 * trendGraph.height / 3 + trendGraph.height / 3);
+                  ctx.fillText((hourMark.getHours() + 24 - h) % 24, (2 - h / 24) * trendGraph.width / 3 + alpha, h % 12 * trendGraph.height / 12 / 3 + trendGraph.height / 3);
                 }
               }
               cellTrend.colSpan = '3'; //so that it takes the whole row
