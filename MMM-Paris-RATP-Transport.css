@@ -16,6 +16,7 @@
 }
 
 .paristransport .velibTrendGraph {
-    border: 1px solid dimgrey;
+    border: solid dimgrey;
+    border-width: 1px 1px 0 1px;
     margin-top: 1ex;
 }
