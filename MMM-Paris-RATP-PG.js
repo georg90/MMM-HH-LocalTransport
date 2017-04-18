@@ -187,7 +187,7 @@ Module.register("MMM-Paris-RATP-PG",{
                 if (dataTimeStamp < trendGraph.timeScale || inTime) {
                   inTime = dataTimeStamp < trendGraph.timeScale; // compute the last one outside of the time window
                   if (dataTimeStamp - trendGraph.timeScale < 10 * 60) { //take it only if it is within 10 minutes of the closing windows
-                    dataTimeStamp = min (dataTimeStamp, trendGraph.timeScale); //to be sure it does not exit the graph
+                    dataTimeStamp = Math.min(dataTimeStamp, trendGraph.timeScale); //to be sure it does not exit the graph
                     var x, y;
                     if (this.config.velibTrendDay) {
                       if ( dataTimeStamp  < this.config.velibTrendZoom ) { //1st third in zoom mode
