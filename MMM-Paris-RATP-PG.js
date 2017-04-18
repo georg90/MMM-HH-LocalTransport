@@ -186,16 +186,16 @@ Module.register("MMM-Paris-RATP-PG",{
                 var dataTimeStamp = (now - new Date(currentStation[dataIndex].lastUpdate)) / 1000; // time of the event in seconds ago
                 if (dataTimeStamp < trendGraph.timeScale || inTime) {
                   inTime = dataTimeStamp < trendGraph.timeScale; // compute the last one outside of the time window
-                  if (dataTimeStamp - trendGraph.timeScale < 10 * 60) { //take it only if it is within 10 minutes of the closing windows
+                  if (dataTimeStamp - trendGraph.timeScale < 10 * 60) { //takes it only if it is within 10 minutes of the closing windows
                     dataTimeStamp = Math.min(dataTimeStamp, trendGraph.timeScale); //to be sure it does not exit the graph
                     var x, y;
                     if (this.config.velibTrendDay) {
                       if ( dataTimeStamp  < this.config.velibTrendZoom ) { //1st third in zoom mode
                         x = (1 - dataTimeStamp / this.config.velibTrendZoom / 3) * trendGraph.width;
-                      } else if (dataTimeStamp - trendGraph.timeScale > this.config.velibTrendZoom) { //middle in compressed mode
-                        x = (2/3 - (dataTimeStamp - this.config.velibTrendZoom) / trendGraph.timeScale / 3) * trendGraph.width;
+                      } else if (dataTimeStamp < trendGraph.timeScale - this.config.velibTrendZoom) { //middle in compressed mode
+                        x = (2/3 - (dataTimeStamp - this.config.velibTrendZoom) / (trendGraph.timeScale - 2 * this.config.velibTrendZoom)/ 3) * trendGraph.width;
                       } else {
-                        x = (1 / 3 - (dataTimeStamp - trendGraph.timeScale + this.config.velibTrendZoom)/ trendGraph.timeScale / 3) * trendGraph.width;
+                        x = (1 / 3 - (dataTimeStamp - trendGraph.timeScale + this.config.velibTrendZoom)/ this.config.velibTrendZoom / 3) * trendGraph.width;
                       }
                     } else {
                       x = (1 - dataTimeStamp / trendGraph.timeScale) * trendGraph.width;
