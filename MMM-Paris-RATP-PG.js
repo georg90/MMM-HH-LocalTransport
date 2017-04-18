@@ -202,13 +202,13 @@ Module.register("MMM-Paris-RATP-PG",{
                     }
                     y = currentStation[dataIndex].bike / currentStation[dataIndex].total * trendGraph.height * 4 / 5;
                     ctx.fillStyle = 'white';
-                    ctx.fillRect(x, trendGraph.height - y, previousX - x, Math.max(y, this.config.velibTrendMinLine || 1)); //a thin line even if it's zero
+                    ctx.fillRect(x, trendGraph.height - y, previousX - x, Math.max(y, Math.max(this.config.velibTrendMinLine, 1))); //a thin line even if it's zero
                     previousX = x;
                   }
                 }
               }
-              var bodyStyle = window.getComputedStyle(document.getElementsByTagName('body')[0], null);
-              ctx.font = bodyStyle.getPropertyValue(('font-size')) + ' ' + ctx.font.split(' ').slice(-1)[0]; //00px sans-serif
+//              var bodyStyle = window.getComputedStyle(document.getElementsByTagName('body')[0], null);
+//              ctx.font = bodyStyle.getPropertyValue(('font-size')) + ' ' + ctx.font.split(' ').slice(-1)[0]; //00px sans-serif
               ctx.font = Math.round(trendGraph.height / 5) + 'px ' + ctx.font.split(' ').slice(-1)[0];
               ctx.fillStyle = 'grey';
               ctx.textAlign = 'center';
