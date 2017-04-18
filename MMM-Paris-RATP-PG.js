@@ -202,7 +202,7 @@ Module.register("MMM-Paris-RATP-PG",{
                     }
                     y = currentStation[dataIndex].bike / currentStation[dataIndex].total * trendGraph.height * 4 / 5;
                     ctx.fillStyle = 'white';
-                    ctx.fillRect(x, trendGraph.height - y, previousX - x, Math.max(y, Math.max(this.config.velibTrendMinLine, 1))); //a thin line even if it's zero
+                    ctx.fillRect(x, trendGraph.height - y, previousX - x, Math.max(y, this.config.velibTrendMinLine || 1)); //a thin line even if it's zero
                     previousX = x;
                   }
                 }
