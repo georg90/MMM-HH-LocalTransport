@@ -177,7 +177,7 @@ Module.register("MMM-Paris-RATP-PG",{
               trendGraph.width  = this.config.velibTrendWidth || 400;
               trendGraph.height = this.config.velibTrendHeight || 100;
               trendGraph.timeScale = this.config.velibTrendDay ? 24 * 60 * 60 : this.config.velibTrendTimeScale || 60 * 60; // in nb of seconds, the previous hour
-              this.config.velibTrendZoom = this.config.velibTrendZoom || 30; //default zoom windows is 30 minutes for velibTrendDay
+              this.config.velibTrendZoom = this.config.velibTrendZoom || 30 * 60; //default zoom windows is 30 minutes for velibTrendDay
               var ctx = trendGraph.getContext('2d');
               var currentStation = this.velibHistory[stop.stations];
               var previousX = trendGraph.width;
@@ -201,7 +201,7 @@ Module.register("MMM-Paris-RATP-PG",{
                       x = (1 - dataTimeStamp / trendGraph.timeScale) * trendGraph.width;
                     }
                     y = currentStation[dataIndex].bike / currentStation[dataIndex].total * trendGraph.height;
-                    ctx.fillStyle = 'white';
+                    ctx.strokeStyle = 'grey';
                     ctx.fillRect(x, trendGraph.height - y, previousX - x, Math.max(y, this.config.velibTrendMinLine || 1)); //a thin line even if it's zero
                     previousX = x;
                   }
