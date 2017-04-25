@@ -90,9 +90,9 @@ module.exports = NodeHelper.create({
       stopConfig = self.config.busStations[index];
       if (stopConfig.type != 'velib') {
         if (stopConfig.api == 'v3') {
-          url = self.config.apiBaseV3 + 'schedules/' + stopConfig.type + '/' + stopConfig.line + '/' + stopConfig.stations + '/' + stopConfig.destination; // get schedule for that bus
+          url = self.config.apiBaseV3 + 'schedules/' + stopConfig.type + '/' + stopConfig.line.toString().toUpperCase() + '/' + stopConfig.stations + '/' + stopConfig.destination; // get schedule for that bus
         } else {
-          url = self.config.apiBase + stopConfig.type + '/' + stopConfig.line + '/stations/' + stopConfig.stations + '?destination=' + stopConfig.destination; // get schedule for that bus
+          url = self.config.apiBase + stopConfig.type + '/' + stopConfig.line.toString().toUpperCase() + '/stations/' + stopConfig.stations + '?destination=' + stopConfig.destination; // get schedule for that bus
         }
         self.getResponse(url, self.processBus.bind(this), stopConfig);
       } else {
