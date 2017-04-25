@@ -61,7 +61,7 @@ module.exports = NodeHelper.create({
               console.log (' *** received answer for: ' + _url);
               console.log (_stopConfig);
             }
-            _processFunction(response.body);
+            _processFunction(response.body, _stopConfig);
           } else {
             if (self.config.debug) {
               if (response) {
@@ -116,13 +116,18 @@ module.exports = NodeHelper.create({
     this.sendSocketNotification("VELIB", this.velib);
   },
 
-  processBus: function(data) {
+  processBus: function(data, stopConfig) {
+    var idMaker;
     if (this.config.debug) { console.log (' *** processBus data'); console.log (data); }
     this.schedule = {};
-    var schedules = data.response ? data.response.schedules : data.result.schedules;
-    var informations = data.response.informations;
-    this.schedule.id = informations.line + '/' + (informations.station.id_station || informations.station.id) + '/' + (informations.destination.id_destination || informations.destination.id);
-    this.schedule.schedules = schedules;
+    if (data.response.informations) {
+      var informations = data.response.informations;
+      this.schedule.id = informations.line + '/' + (informations.station.id_station || informations.station.id) + '/' + (informations.destination.id_destination || informations.destination.id);
+    } else {
+      idMaker = response._metadata.split('/');
+      this.schedule.id = idMaker[idMaker.length - 3] + '/' + idMaker[idMaker.length - 2] + '/' + idMaker[idMaker.length - 1];
+    }
+    this.schedule.schedules = data.response ? data.response.schedules : data.result.schedules;
     this.schedule.lastUpdate = new Date();
     this.loaded = true;
     this.sendSocketNotification("BUS", this.schedule);
