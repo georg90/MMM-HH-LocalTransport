@@ -117,6 +117,7 @@ module.exports = NodeHelper.create({
   },
 
   processBus: function(data) {
+    if (this.config.debug) { console.log (' *** processBus data'); console.log (data); }
     this.schedule = {};
     var schedules = data.response.schedules;
     var informations = data.response.informations;
