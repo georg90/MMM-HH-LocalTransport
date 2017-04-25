@@ -122,7 +122,7 @@ module.exports = NodeHelper.create({
     this.schedule = {};
     if (data.response) {
       idMaker = data.response.informations;
-      this.schedule.id = idMaker.line + '/' + (idMaker.station.id_station || idMaker.station.id) + '/' + (idMaker.destination.id_destination || idMaker.destination.id);
+      this.schedule.id = idMaker.line.toString().toUpperCase() + '/' + (idMaker.station.id_station || idMaker.station.id) + '/' + (idMaker.destination.id_destination || idMaker.destination.id);
     } else {
       idMaker = data._metadata.call.split('/');
       this.schedule.id = idMaker[idMaker.length - 3] + '/' + idMaker[idMaker.length - 2] + '/' + idMaker[idMaker.length - 1];
