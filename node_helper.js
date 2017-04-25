@@ -124,7 +124,7 @@ module.exports = NodeHelper.create({
       idMaker = data.response.informations;
       this.schedule.id = idMaker.line + '/' + (idMaker.station.id_station || idMaker.station.id) + '/' + (idMaker.destination.id_destination || idMaker.destination.id);
     } else {
-      idMaker = data.result._metadata.split('/');
+      idMaker = data.result._metadata.call.split('/');
       this.schedule.id = idMaker[idMaker.length - 3] + '/' + idMaker[idMaker.length - 2] + '/' + idMaker[idMaker.length - 1];
     }
     this.schedule.schedules = data.response ? data.response.schedules : data.result.schedules;
