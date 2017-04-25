@@ -90,9 +90,9 @@ module.exports = NodeHelper.create({
       stopConfig = self.config.busStations[index];
       if (stopConfig.type != 'velib') {
         if (stopConfig.api == 'v3') {
-          url = self.config.apiBaseV3 + 'schedules/' + stopConfig.type + '/' + stopConfig.line.toString().toUpperCase() + '/' + stopConfig.stations + '/' + stopConfig.destination; // get schedule for that bus
+          url = self.config.apiBaseV3 + 'schedules/' + stopConfig.type + '/' + stopConfig.line.toString().toLowerCase() + '/' + stopConfig.stations + '/' + stopConfig.destination; // get schedule for that bus
         } else {
-          url = self.config.apiBase + stopConfig.type + '/' + stopConfig.line.toString().toUpperCase() + '/stations/' + stopConfig.stations + '?destination=' + stopConfig.destination; // get schedule for that bus
+          url = self.config.apiBase + stopConfig.type + '/' + stopConfig.line.toString().toLowerCase() + '/stations/' + stopConfig.stations + '?destination=' + stopConfig.destination; // get schedule for that bus
         }
         self.getResponse(url, self.processBus.bind(this), stopConfig);
       } else {
@@ -122,7 +122,7 @@ module.exports = NodeHelper.create({
     this.schedule = {};
     if (data.response) {
       idMaker = data.response.informations;
-      this.schedule.id = idMaker.line.toString().toUpperCase() + '/' + (idMaker.station.id_station || idMaker.station.id) + '/' + (idMaker.destination.id_destination || idMaker.destination.id);
+      this.schedule.id = idMaker.line.toString().toLowerCase() + '/' + (idMaker.station.id_station || idMaker.station.id) + '/' + (idMaker.destination.id_destination || idMaker.destination.id);
     } else {
       idMaker = data._metadata.call.split('/');
       this.schedule.id = idMaker[idMaker.length - 3] + '/' + idMaker[idMaker.length - 2] + '/' + idMaker[idMaker.length - 1];

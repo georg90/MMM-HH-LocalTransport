@@ -95,7 +95,7 @@ Module.register("MMM-Paris-RATP-PG",{
         case "bus":
         case "tramways":
         case "rers":
-          var stopIndex = stop.line.toString().toUpperCase() + '/' + stop.stations + '/' + stop.destination;
+          var stopIndex = stop.line.toString().toLowerCase() + '/' + stop.stations + '/' + stop.destination;
           var previousRow, previousDestination, previousMessage, row, comingBus;
           var comingBuses = this.busSchedules[stopIndex] || [{message: 'N/A', destination: 'N/A'}];
           var comingBusLastUpdate = this.busLastUpdate[stopIndex];
