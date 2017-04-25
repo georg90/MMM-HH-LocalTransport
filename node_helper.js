@@ -57,7 +57,7 @@ module.exports = NodeHelper.create({
         })
         .end(function(response){
           if (response && response.body) {
-            if (this.config.debug) {
+            if (self.config.debug) {
               console.log (' *** received answer for: ' + _url);
               console.log (_stopConfig);
             }
@@ -119,7 +119,7 @@ module.exports = NodeHelper.create({
   processBus: function(data) {
     if (this.config.debug) { console.log (' *** processBus data'); console.log (data); }
     this.schedule = {};
-    var schedules = data.response.schedules;
+    var schedules = data.response ? data.response.schedules : data.result.schedules;
     var informations = data.response.informations;
     this.schedule.id = informations.line + '/' + (informations.station.id_station || informations.station.id) + '/' + (informations.destination.id_destination || informations.destination.id);
     this.schedule.schedules = schedules;
