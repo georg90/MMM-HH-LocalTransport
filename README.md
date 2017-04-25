@@ -11,7 +11,7 @@ A module to display the different buses and rers related to a list of station/de
 
 # API
 
-It is based on the open REST API from Pierre Grimaud https://github.com/pgrimaud/horaires-ratp-api, which does not require any configuration / registration. Immediate use.
+It is based on the open REST API from Pierre Grimaud https://github.com/pgrimaud/horaires-ratp-api, which does not require any configuration / registration. Immediate use. Support v2 & v3.
 It also use the Paris Open Data for the velib: https://opendata.paris.fr/explore/dataset/stations-velib-disponibilites-en-temps-reel/ (use it to get the 5 digits stations you will need for the configuration).
 
 # Install
@@ -43,22 +43,30 @@ It also use the Paris Open Data for the velib: https://opendata.paris.fr/explore
 * debug: false, //console.log more things to help debugging
 * busStations: [] // the list of stations/directions to monitor (bus and RERs, probably works also for Subways)
 * busStations is an array of objects with different properties:
-  - 'type': Mandatory: Possible value:['bus', 'rers', 'velib']
-  - 'line': Mandatory for 'bus' & 'rers']: Value such as:[28, 'B'] -> typically the official name but you can check through: 
-   . https://api-ratp.pierre-grimaud.fr/v2/bus/
-   . https://api-ratp.pierre-grimaud.fr/v2/rers/
-  - 'stations': Mandatory: [digits of the station] ->
-    . for bus/rers, the station id, look it up with the url, typically: https://api-ratp.pierre-grimaud.fr/v2/{type}/{line}
-    . for velib, you can serach here: https://opendata.paris.fr/explore/dataset/stations-velib-disponibilites-en-temps-reel/
+  - 'api': Optional: needs to be set to 'v3' if the v3 of the API is to be used for the pierre-grimaud interface. If missing, v2 is assumed for backward compatibility (ignore for velib)
+  - 'type': Mandatory: Possible value:['bus', 'rers', 'tramways', 'velib']
+  - 'line': Mandatory for 'bus', 'rers' & 'tramways']: Value such as:[28, 'B'] -> typically the official name but you can check through: 
+   . v2: https://api-ratp.pierre-grimaud.fr/v2/bus, https://api-ratp.pierre-grimaud.fr/v2/rers, https://api-ratp.pierre-grimaud.fr/v2/tramways
+   . v3: https://api-ratp.pierre-grimaud.fr/v3/lines/bus, https://api-ratp.pierre-grimaud.fr/v3/lines/rers, https://api-ratp.pierre-grimaud.fr/v3/lines/tramways
+  - 'stations': Mandatory: [digits of the station in v2, name of the station in v3] ->
+    . v2 for bus/rers/tramways, the station id, look it up with the url, typically: https://api-ratp.pierre-grimaud.fr/v2/{type}/{line}
+    . v3 for bus/rers/tramways, https://api-ratp.pierre-grimaud.fr/v3/stations/{type}/{line}
+    . for velib, you can search here: https://opendata.paris.fr/explore/dataset/stations-velib-disponibilites-en-temps-reel/
   - 'destination': 
-    . Mandatory for 'bus' & 'rers': [the destination id] (indicated in the same look up url)
+    . v2: Mandatory for 'bus', 'rers' & tramways: [the destination id] (indicated in the same look up url)
+    . v3: Mandatory for 'bus', 'rers' & tramways: either 'A' or 'R'
     . Optional for 'velib': ['leaving', 'arriving', '']: indicate if only one value is needed //not in use yet
   - 'label': Optional: to rename the line differently if needed
 
 Example:
 ```javascript
-busStations: [{type: 'bus', line: 38, stations: 2758, destination: 183, label: 'bus vers le Nord'}, 
-                  {type: 'rers', line: 'B', stations: 62, destination: 4},
-		  {type: 'velib', stations: 05029, destination: 'leaving', label 'RER'}]
+busStations: [
+	{type: 'bus', line: 38, stations: 2758, destination: 183, label: 'bus vers le Nord'},
+	{api: 'v3', type: 'bus', line: 38, stations: 'observatoire+++port+royal', destination: 'A'},
+        {type: 'rers', line: 'B', stations: 62, destination: 4},
+	{api: 'v3', type: 'rers', line: 'B', stations: 'port+royal', destination: 'A'},
+	{type: 'tramways', line: '3a', stations: 464, destination: 41},
+	{api: 'v3', type: 'tramways', line: '3a', stations: 'georges+brassens', destination: 'R'},
+	{type: 'velib', stations: 05029, destination: 'leaving', label 'RER'}]
 ```
-# v1.2
+# v1.3
