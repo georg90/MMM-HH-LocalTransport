@@ -47,7 +47,7 @@ module.exports = NodeHelper.create({
     }, nextLoad);
   },
 
-  getResponse: function(_url, _processFunction) {
+  getResponse: function(_url, _processFunction, _stopConfig) {
     var self = this;
     var retry = true;
     if (this.config.debug) { console.log (' *** fetching: ' + _url);}
@@ -57,6 +57,10 @@ module.exports = NodeHelper.create({
         })
         .end(function(response){
           if (response && response.body) {
+            if (this.config.debug) {
+              console.log (' *** received answer for: ' + _url);
+              console.log (_stopConfig);
+            }
             _processFunction(response.body);
           } else {
             if (self.config.debug) {
@@ -79,16 +83,20 @@ module.exports = NodeHelper.create({
   */
   updateTimetable: function() {
     var self = this;
-    var url, busStop;
+    var url, stopConfig;
     if (this.config.debug) { console.log (' *** fetching update');}
     self.sendSocketNotification("UPDATE", { lastUpdate : new Date()});
     for (var index in self.config.busStations) {
-      busStop = self.config.busStations[index];
-      if (busStop.type != 'velib') {
-        url = self.config.apiBase + busStop.type + '/' + busStop.line + '/stations/' + busStop.stations + '?destination=' + busStop.destination; // get schedule for that bus
-        self.getResponse(url, self.processBus.bind(this));
+      stopConfig = self.config.busStations[index];
+      if (stopConfig.type != 'velib') {
+        if (stopConfig.api == 'v3') {
+          url = self.config.apiBaseV3 + 'schedules/' + stopConfig.type + '/' + stopConfig.line + '/' + stopConfig.stations + '/' + stopConfig.destination; // get schedule for that bus
+        } else {
+          url = self.config.apiBase + stopConfig.type + '/' + stopConfig.line + '/stations/' + stopConfig.stations + '?destination=' + stopConfig.destination; // get schedule for that bus
+        }
+        self.getResponse(url, self.processBus.bind(this), stopConfig);
       } else {
-        url = self.config.apiVelib + '&q=' + busStop.stations;
+        url = self.config.apiVelib + '&q=' + stopConfig.stations;
         self.getResponse(url, self.processVelib.bind(this));
       }
     }
@@ -109,14 +117,14 @@ module.exports = NodeHelper.create({
   },
 
   processBus: function(data) {
-    this.bus = {};
+    this.schedule = {};
     var schedules = data.response.schedules;
     var informations = data.response.informations;
-    this.bus.id = informations.line + '/' + (informations.station.id_station || informations.station.id) + '/' + (informations.destination.id_destination || informations.destination.id);
-    this.bus.schedules = schedules;
-    this.bus.lastUpdate = new Date();
+    this.schedule.id = informations.line + '/' + (informations.station.id_station || informations.station.id) + '/' + (informations.destination.id_destination || informations.destination.id);
+    this.schedule.schedules = schedules;
+    this.schedule.lastUpdate = new Date();
     this.loaded = true;
-    this.sendSocketNotification("BUS", this.bus);
+    this.sendSocketNotification("BUS", this.schedule);
   }
 
 });
