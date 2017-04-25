@@ -120,11 +120,11 @@ module.exports = NodeHelper.create({
     var idMaker;
     if (this.config.debug) { console.log (' *** processBus data'); console.log (data); }
     this.schedule = {};
-    if (data.response.informations) {
-      var informations = data.response.informations;
-      this.schedule.id = informations.line + '/' + (informations.station.id_station || informations.station.id) + '/' + (informations.destination.id_destination || informations.destination.id);
+    if (data.response) {
+      idMaker = data.response.informations;
+      this.schedule.id = idMaker.line + '/' + (idMaker.station.id_station || idMaker.station.id) + '/' + (idMaker.destination.id_destination || idMaker.destination.id);
     } else {
-      idMaker = response._metadata.split('/');
+      idMaker = data.result._metadata.split('/');
       this.schedule.id = idMaker[idMaker.length - 3] + '/' + idMaker[idMaker.length - 2] + '/' + idMaker[idMaker.length - 1];
     }
     this.schedule.schedules = data.response ? data.response.schedules : data.result.schedules;
