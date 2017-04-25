@@ -93,6 +93,7 @@ Module.register("MMM-Paris-RATP-PG",{
       var stop = this.config.busStations[busIndex];
       switch (stop.type) {
         case "bus":
+        case "tramways":
         case "rers":
           var stopIndex = stop.line + '/' + stop.stations + '/' + stop.destination;
           var previousRow, previousDestination, previousMessage, row, comingBus;
