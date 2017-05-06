@@ -109,11 +109,15 @@ module.exports = NodeHelper.create({
             url = self.config.apiBaseV3 + 'traffic/' + stopConfig.line[0] + '/' + stopConfig.line[1];
             self.getResponse(url, self.processTraffic.bind(this), stopConfig);
           } else {
-            console.log (' *** API version not handled for: ' + stopConfig.type + ' type, version: ' + stopConfig.api);
+            if (this.config.debug) {
+              console.log(' *** API version not handled for: ' + stopConfig.type + ' type, version: ' + stopConfig.api);
+            }
           }
           break;
         default:
-          console.log (' *** unknown request: ' + stopConfig.type);
+          if (this.config.debug) {
+            console.log(' *** unknown request: ' + stopConfig.type);
+          }
       }
     }
   },
@@ -151,9 +155,11 @@ module.exports = NodeHelper.create({
 
   processTraffic: function (data, stopConfig) {
     var result, idMaker;
-    console.log ('response receive: ');
-    console.log (data.result); //line, title, message
-    console.log ('___');
+    if (this.config.debug) {
+      console.log('response receive: ');
+      console.log(data.result); //line, title, message
+      console.log('___');
+    }
     result = {};
     if (data.result) {
       result = data.result;

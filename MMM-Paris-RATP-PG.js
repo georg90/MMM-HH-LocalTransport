@@ -312,8 +312,10 @@ Module.register("MMM-Paris-RATP-PG",{
         this.loaded = true;
         break;
       case "TRAFFIC":
-        console.log (' *** received traffic information for: ' + payload.id);
-        console.log (payload);
+        if (this.config.debug) {
+          console.log(' *** received traffic information for: ' + payload.id);
+          console.log(payload);
+        }
         this.ratpTraffic[payload.id] = payload;
         this.ratpTrafficLastUpdate[payload.id] = payload.lastUpdate;
         this.loaded = true;
