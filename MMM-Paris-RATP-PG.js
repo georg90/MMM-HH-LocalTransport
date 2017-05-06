@@ -31,7 +31,8 @@ Module.register("MMM-Paris-RATP-PG",{
     debug: false, //console.log more things to help debugging
     apiVelib: 'https://opendata.paris.fr/api/records/1.0/search/?dataset=stations-velib-disponibilites-en-temps-reel', // add &q=141111 to get info of that station
     velibGraphWidth: 400, //Height will follow
-    apiAutolib: 'https://opendata.paris.fr/explore/dataset/stations_et_espaces_autolib_de_la_metropole_parisienne/api/' ///add '?q=' mais pas d'info temps réel... pour l'instant
+    apiAutolib: 'https://opendata.paris.fr/explore/dataset/stations_et_espaces_autolib_de_la_metropole_parisienne/api/', ///add '?q=' mais pas d'info temps réel... pour l'instant
+    conversion: { "Trafic normal sur l'ensemble de la ligne." : 'Traffic OK'},
   },
   
   // Define required scripts.
@@ -88,7 +89,7 @@ Module.register("MMM-Paris-RATP-PG",{
     }
     
     var table = document.createElement("table");
-    var stopIndex;
+    var stopIndex, message;
     var previousRow, previousDestination, previousMessage, row, comingBus;
     var firstCell, secondCell;
     wrapper.appendChild(table);
@@ -107,7 +108,9 @@ Module.register("MMM-Paris-RATP-PG",{
           row.appendChild(firstCell);
           secondCell = document.createElement("td");
           secondCell.className = "align-left";
-          secondCell.innerHTML = this.ratpTraffic[stopIndex] ? this.ratpTraffic[stopIndex].message : 'N/A';
+          message = this.config.conversion[this.ratpTraffic[stopIndex].message] || this.ratpTraffic[stopIndex].message;
+          secondCell.innerHTML = this.ratpTraffic[stopIndex] ? message : 'N/A';
+          secondCell.colSpan = 2;
           if (this.caller == 'TRAFFIC') {
             console.log(' *** ratpTraffic');
             console.log (stopIndex);
