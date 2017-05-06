@@ -99,7 +99,7 @@ Module.register("MMM-Paris-RATP-PG",{
       var stop = this.config.busStations[busIndex];
       switch (stop.type) {
         case "traffic":
-          stopIndex = 'traffic' + stop.line[0].toString().toLowerCase() + '/' + stop.line[1].toString().toLowerCase();
+          stopIndex = 'traffic' + '/' + stop.line[0].toString().toLowerCase() + '/' + stop.line[1].toString().toLowerCase();
           row = document.createElement("tr");
           firstCell = document.createElement("td");
           firstCell.className = "align-right bright";
