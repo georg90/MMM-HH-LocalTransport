@@ -45,6 +45,7 @@ Module.register("MMM-Paris-RATP-PG",{
     this.sendSocketNotification('SET_CONFIG', this.config);
     this.busSchedules = {};
     this.ratpTraffic = {};
+    this.ratpTrafficLastUpdate = {};
     this.velibHistory = {};
     this.busLastUpdate = {};
     this.loaded = false;
@@ -86,6 +87,9 @@ Module.register("MMM-Paris-RATP-PG",{
     }
     
     var table = document.createElement("table");
+    var stopIndex;
+    var previousRow, previousDestination, previousMessage, row, comingBus;
+    var firstCell, secondCell;
     wrapper.appendChild(table);
     table.className = "small";
 
@@ -94,19 +98,29 @@ Module.register("MMM-Paris-RATP-PG",{
       var stop = this.config.busStations[busIndex];
       switch (stop.type) {
         case "traffic":
+          console.log (' *** ratpTraffic');
+          console.log(this.ratpTraffic);
+          stopIndex = stop.line[0].toString().toLowerCase() + '/' + stop.line[1].toString().toLowerCase();
+          row = document.createElement("tr");
+          firstCell = document.createElement("td");
+          firstCell.className = "align-right bright";
+          firstCell.innerHTML = stop.line[1];
+          row.appendChild(firstCell);
+          secondCell = document.createElement("td");
+          secondCell.className = "align-left";
+          secondCell.innerHTML = this.ratpTraffic[stopIndex] ? this.ratpTraffic[stopIndex].message : 'N/A';
+          row.appendChild(secondCell);
           break;
         case "bus":
         case "metros":
         case "tramways":
         case "rers":
-          var stopIndex = stop.line.toString().toLowerCase() + '/' + stop.stations + '/' + stop.destination;
-          var previousRow, previousDestination, previousMessage, row, comingBus;
+          stopIndex = stop.line.toString().toLowerCase() + '/' + stop.stations + '/' + stop.destination;
           var comingBuses = this.busSchedules[stopIndex] || [{message: 'N/A', destination: 'N/A'}];
           var comingBusLastUpdate = this.busLastUpdate[stopIndex];
           for (var comingIndex = 0; (comingIndex < this.config.maximumEntries) && (comingIndex < comingBuses.length); comingIndex++) {
             row = document.createElement("tr");
             comingBus = comingBuses[comingIndex];
-
             var busNameCell = document.createElement("td");
             busNameCell.className = "align-right bright";
             if (firstLine) {
@@ -296,6 +310,9 @@ Module.register("MMM-Paris-RATP-PG",{
       case "TRAFFIC":
         console.log (' *** received traffic information for: ' + payload.id);
         console.log (payload);
+        this.ratpTraffic[payload.id] = payload;
+        this.ratpTrafficLastUpdate[payload.id] = payload.lastUpdate;
+        this.updateDom();
         break;
       case "UPDATE":
         this.config.lastUpdate = payload.lastUpdate;
