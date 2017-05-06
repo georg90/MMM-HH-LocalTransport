@@ -52,7 +52,7 @@ Module.register("MMM-Paris-RATP-PG",{
     this.updateTimer = null;
     var self = this;
     setInterval(function () {
-      self.loaded = false;
+      self.caller = 'updateInterval';
       self.updateDom();
     }, 1000);
   },
@@ -99,7 +99,7 @@ Module.register("MMM-Paris-RATP-PG",{
       var stop = this.config.busStations[busIndex];
       switch (stop.type) {
         case "traffic":
-          if (this.loaded) {
+          if (this.caller == 'TRAFFIC') {
             console.log(' *** ratpTraffic');
             console.log(this.ratpTraffic);
           }
@@ -282,6 +282,7 @@ Module.register("MMM-Paris-RATP-PG",{
   },
   
   socketNotificationReceived: function(notification, payload) {
+    this.caller = notification;
     switch (notification) {
       case "BUS":
         this.busSchedules[payload.id] = payload.schedules;
