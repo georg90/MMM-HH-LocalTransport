@@ -88,16 +88,32 @@ module.exports = NodeHelper.create({
     self.sendSocketNotification("UPDATE", { lastUpdate : new Date()});
     for (var index in self.config.busStations) {
       stopConfig = self.config.busStations[index];
-      if (stopConfig.type != 'velib') {
-        if (stopConfig.api == 'v3') {
-          url = self.config.apiBaseV3 + 'schedules/' + stopConfig.type + '/' + stopConfig.line.toString().toLowerCase() + '/' + stopConfig.stations + '/' + stopConfig.destination; // get schedule for that bus
-        } else {
-          url = self.config.apiBase + stopConfig.type + '/' + stopConfig.line.toString().toLowerCase() + '/stations/' + stopConfig.stations + '?destination=' + stopConfig.destination; // get schedule for that bus
-        }
-        self.getResponse(url, self.processBus.bind(this), stopConfig);
-      } else {
-        url = self.config.apiVelib + '&q=' + stopConfig.stations;
-        self.getResponse(url, self.processVelib.bind(this));
+      switch (stopConfig.type) {
+        case 'tramways':
+        case 'bus':
+        case 'rers':
+        case 'metros':
+          if (stopConfig.api == 'v3') {
+            url = self.config.apiBaseV3 + 'schedules/' + stopConfig.type + '/' + stopConfig.line.toString().toLowerCase() + '/' + stopConfig.stations + '/' + stopConfig.destination; // get schedule for that bus
+          } else {
+            url = self.config.apiBase + stopConfig.type + '/' + stopConfig.line.toString().toLowerCase() + '/stations/' + stopConfig.stations + '?destination=' + stopConfig.destination; // get schedule for that bus
+          }
+          self.getResponse(url, self.processBus.bind(this), stopConfig);
+          break;
+        case "velib":
+          url = self.config.apiVelib + '&q=' + stopConfig.stations;
+          self.getResponse(url, self.processVelib.bind(this));
+          break;
+        case 'status':
+          if (stopConfig.api == 'v3') {
+            url = self.config.apiBaseV3 + 'traffic/' + stopConfig.line[0] + '/' + stopConfig.line[1];
+            self.getResponse(url, self.processStatus.bind(this), stopConfig);
+          } else {
+            console.log (' *** API version not handled for: ' + stopConfig.type + ' type, version: ' + stopConfig.api);
+          }
+          break;
+        default:
+          console.log (' *** unknown request: ' + stopConfig.type);
       }
     }
   },
@@ -131,6 +147,12 @@ module.exports = NodeHelper.create({
     this.schedule.lastUpdate = new Date();
     this.loaded = true;
     this.sendSocketNotification("BUS", this.schedule);
+  },
+
+  processStatus: function (data, stopConfig) {
+    console.log ('response receive: ');
+    console.log (data.response);
+    console.log ('___');
   }
 
 });
