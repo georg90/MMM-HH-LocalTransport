@@ -5,7 +5,7 @@ MagicMirror MichMich module to display next buses and RERs for a configured list
 Forked from MMM-HH-LocalTransport see more detailed information on gerog90 [blog](https://lane6.de).
 
 # Presentation
-A module to display the different buses and rers related to a list of station/destination, in order to avoid waiting to much for them when leaving home. It can also displays the available spaces & bikes in selected Velib stations, along with the trend over the last hour (configurable).
+A module to display the different buses, rers, tramways & metros related to a list of station/destination, in order to avoid waiting to much for them when leaving home. It can also displays the available spaces & bikes in selected Velib stations, along with the trend over the last hour (configurable).
 
 # Screenshot
 ![screenshot](https://github.com/da4throux/MMM-Paris-RATP-PG/blob/master/MMM-Paris-RATP-PG2.png)
@@ -47,15 +47,15 @@ It also use the Paris Open Data for the velib: https://opendata.paris.fr/explore
   - 'api': Optional: needs to be set to 'v3' if the v3 of the API is to be used for the pierre-grimaud interface. If missing, v2 is assumed for backward compatibility (ignore for velib)
   - 'type': Mandatory: Possible value:['bus', 'rers', 'tramways', 'velib']
   - 'line': Mandatory for 'bus', 'rers' & 'tramways']: Value such as:[28, 'B'] -> typically the official name but you can check through: 
-   . v2: https://api-ratp.pierre-grimaud.fr/v2/bus, https://api-ratp.pierre-grimaud.fr/v2/rers, https://api-ratp.pierre-grimaud.fr/v2/tramways
-   . v3: https://api-ratp.pierre-grimaud.fr/v3/lines/bus, https://api-ratp.pierre-grimaud.fr/v3/lines/rers, https://api-ratp.pierre-grimaud.fr/v3/lines/tramways
+   . v2: https://api-ratp.pierre-grimaud.fr/v2/bus, https://api-ratp.pierre-grimaud.fr/v2/rers, https://api-ratp.pierre-grimaud.fr/v2/tramways, https://api-ratp.pierre-grimaud.fr/v2/metros
+   . v3: https://api-ratp.pierre-grimaud.fr/v3/lines/bus, https://api-ratp.pierre-grimaud.fr/v3/lines/rers, https://api-ratp.pierre-grimaud.fr/v3/lines/tramways, https://api-ratp.pierre-grimaud.fr/v3/lines/metros
   - 'stations': Mandatory: [digits of the station in v2, name of the station in v3] ->
-    . v2 for bus/rers/tramways, the station id, look it up with the url, typically: https://api-ratp.pierre-grimaud.fr/v2/{type}/{line}
-    . v3 for bus/rers/tramways, https://api-ratp.pierre-grimaud.fr/v3/stations/{type}/{line}
+    . v2 for bus/rers/tramways/metros, the station id, look it up with the url, typically: https://api-ratp.pierre-grimaud.fr/v2/{type}/{line}
+    . v3 for bus/rers/tramways/metros, https://api-ratp.pierre-grimaud.fr/v3/stations/{type}/{line}
     . for velib, you can search here: https://opendata.paris.fr/explore/dataset/stations-velib-disponibilites-en-temps-reel/
   - 'destination': 
-    . v2: Mandatory for 'bus', 'rers' & tramways: [the destination id] (indicated in the same look up url)
-    . v3: Mandatory for 'bus', 'rers' & tramways: either 'A' or 'R'
+    . v2: Mandatory for 'metros', 'bus', 'rers' & 'tramways': [the destination id] (indicated in the same look up url)
+    . v3: Mandatory for 'metros', 'bus', 'rers' & tramways: either 'A' or 'R'
     . Optional for 'velib': ['leaving', 'arriving', '']: indicate if only one value is needed //not in use yet
   - 'label': Optional: to rename the line differently if needed
 
@@ -66,8 +66,10 @@ busStations: [
 	{api: 'v3', type: 'bus', line: 38, stations: 'observatoire+++port+royal', destination: 'A'},
         {type: 'rers', line: 'B', stations: 62, destination: 4},
 	{api: 'v3', type: 'rers', line: 'B', stations: 'port+royal', destination: 'A'},
-	{type: 'tramways', line: '3a', stations: 464, destination: 41},
+	{type: 'tramways', line: '3a', stations: 464, destination: 41},	
 	{api: 'v3', type: 'tramways', line: '3a', stations: 'georges+brassens', destination: 'R'},
+	{type: 'metros', line: '6', stations: 145, destination: 17},	
+	{api: 'v3', type: 'metros', line: '6', stations: 'raspail', destination: 'A'},
 	{type: 'velib', stations: 05029, destination: 'leaving', label 'RER'}]
 ```
-# v1.3
+# v1.4
