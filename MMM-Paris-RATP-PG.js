@@ -115,6 +115,7 @@ Module.register("MMM-Paris-RATP-PG",{
             console.log (secondCell.innerHTML);
           }
           row.appendChild(secondCell);
+          table.appendChild(row);
           break;
         case "bus":
         case "metros":
