@@ -116,6 +116,8 @@ Module.register("MMM-Paris-RATP-PG",{
             console.log (stopIndex);
             console.log(this.ratpTraffic);
             console.log (secondCell.innerHTML);
+            console.log ('message: ' + message);
+            console.log (this.config.conversion);
           }
           row.appendChild(secondCell);
           table.appendChild(row);
