@@ -31,7 +31,8 @@ Module.register("MMM-Paris-RATP-PG",{
     debug: false, //console.log more things to help debugging
     apiVelib: 'https://opendata.paris.fr/api/records/1.0/search/?dataset=stations-velib-disponibilites-en-temps-reel', // add &q=141111 to get info of that station
     velibGraphWidth: 400, //Height will follow
-    apiAutolib: 'https://opendata.paris.fr/explore/dataset/stations_et_espaces_autolib_de_la_metropole_parisienne/api/' ///add '?q=' mais pas d'info temps réel... pour l'instant
+    apiAutolib: 'https://opendata.paris.fr/explore/dataset/stations_et_espaces_autolib_de_la_metropole_parisienne/api/', ///add '?q=' mais pas d'info temps réel... pour l'instant
+    conversion: { "Trafic normal sur l'ensemble de la ligne." : 'Traffic OK'},
   },
   
   // Define required scripts.
@@ -44,12 +45,15 @@ Module.register("MMM-Paris-RATP-PG",{
     Log.info("Starting module: " + this.name);
     this.sendSocketNotification('SET_CONFIG', this.config);
     this.busSchedules = {};
+    this.ratpTraffic = {};
+    this.ratpTrafficLastUpdate = {};
     this.velibHistory = {};
     this.busLastUpdate = {};
     this.loaded = false;
     this.updateTimer = null;
     var self = this;
     setInterval(function () {
+      self.caller = 'updateInterval';
       self.updateDom();
     }, 1000);
   },
@@ -85,6 +89,9 @@ Module.register("MMM-Paris-RATP-PG",{
     }
     
     var table = document.createElement("table");
+    var stopIndex;
+    var previousRow, previousDestination, previousMessage, row, comingBus;
+    var firstCell, secondCell;
     wrapper.appendChild(table);
     table.className = "small";
 
@@ -92,18 +99,30 @@ Module.register("MMM-Paris-RATP-PG",{
       var firstLine = true;
       var stop = this.config.busStations[busIndex];
       switch (stop.type) {
+        case "traffic":
+          stopIndex = 'traffic' + '/' + stop.line[0].toString().toLowerCase() + '/' + stop.line[1].toString().toLowerCase();
+          row = document.createElement("tr");
+          firstCell = document.createElement("td");
+          firstCell.className = "align-right bright";
+          firstCell.innerHTML = stop.label || stop.line[1];
+          row.appendChild(firstCell);
+          secondCell = document.createElement("td");
+          secondCell.className = "align-left";
+          secondCell.innerHTML = this.ratpTraffic[stopIndex] ? this.config.conversion[this.ratpTraffic[stopIndex].message] || this.ratpTraffic[stopIndex].message : 'N/A';
+          secondCell.colSpan = 2;
+          row.appendChild(secondCell);
+          table.appendChild(row);
+          break;
         case "bus":
         case "metros":
         case "tramways":
         case "rers":
-          var stopIndex = stop.line.toString().toLowerCase() + '/' + stop.stations + '/' + stop.destination;
-          var previousRow, previousDestination, previousMessage, row, comingBus;
+          stopIndex = stop.line.toString().toLowerCase() + '/' + stop.stations + '/' + stop.destination;
           var comingBuses = this.busSchedules[stopIndex] || [{message: 'N/A', destination: 'N/A'}];
           var comingBusLastUpdate = this.busLastUpdate[stopIndex];
           for (var comingIndex = 0; (comingIndex < this.config.maximumEntries) && (comingIndex < comingBuses.length); comingIndex++) {
             row = document.createElement("tr");
             comingBus = comingBuses[comingIndex];
-
             var busNameCell = document.createElement("td");
             busNameCell.className = "align-right bright";
             if (firstLine) {
@@ -262,6 +281,7 @@ Module.register("MMM-Paris-RATP-PG",{
   },
   
   socketNotificationReceived: function(notification, payload) {
+    this.caller = notification;
     switch (notification) {
       case "BUS":
         this.busSchedules[payload.id] = payload.schedules;
@@ -289,6 +309,17 @@ Module.register("MMM-Paris-RATP-PG",{
             console.log(' *** redundant velib payload for ' + payload.id + ' with time ' + payload.lastUpdate + ' && ' + this.velibHistory[payload.id][this.velibHistory[payload.id].length - 1].lastUpdate);
           }
         }
+        this.loaded = true;
+        break;
+      case "TRAFFIC":
+        if (this.config.debug) {
+          console.log(' *** received traffic information for: ' + payload.id);
+          console.log(payload);
+        }
+        this.ratpTraffic[payload.id] = payload;
+        this.ratpTrafficLastUpdate[payload.id] = payload.lastUpdate;
+        this.loaded = true;
+        this.updateDom();
         break;
       case "UPDATE":
         this.config.lastUpdate = payload.lastUpdate;
