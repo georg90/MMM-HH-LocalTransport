@@ -104,7 +104,7 @@ Module.register("MMM-Paris-RATP-PG",{
           row = document.createElement("tr");
           firstCell = document.createElement("td");
           firstCell.className = "align-right bright";
-          firstCell.innerHTML = stop.line[1];
+          firstCell.innerHTML = stop.label || stop.line[1];
           row.appendChild(firstCell);
           secondCell = document.createElement("td");
           secondCell.className = "align-left";
