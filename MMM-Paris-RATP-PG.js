@@ -44,6 +44,7 @@ Module.register("MMM-Paris-RATP-PG",{
     Log.info("Starting module: " + this.name);
     this.sendSocketNotification('SET_CONFIG', this.config);
     this.busSchedules = {};
+    this.ratpTraffic = {};
     this.velibHistory = {};
     this.busLastUpdate = {};
     this.loaded = false;
@@ -92,6 +93,8 @@ Module.register("MMM-Paris-RATP-PG",{
       var firstLine = true;
       var stop = this.config.busStations[busIndex];
       switch (stop.type) {
+        case "traffic":
+          break;
         case "bus":
         case "metros":
         case "tramways":
@@ -289,6 +292,10 @@ Module.register("MMM-Paris-RATP-PG",{
             console.log(' *** redundant velib payload for ' + payload.id + ' with time ' + payload.lastUpdate + ' && ' + this.velibHistory[payload.id][this.velibHistory[payload.id].length - 1].lastUpdate);
           }
         }
+        break;
+      case "TRAFFIC":
+        console.log (' *** received traffic information for: ' + payload.id);
+        console.log (payload);
         break;
       case "UPDATE":
         this.config.lastUpdate = payload.lastUpdate;

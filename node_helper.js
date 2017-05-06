@@ -104,10 +104,10 @@ module.exports = NodeHelper.create({
           url = self.config.apiVelib + '&q=' + stopConfig.stations;
           self.getResponse(url, self.processVelib.bind(this));
           break;
-        case 'status':
+        case 'traffic':
           if (stopConfig.api == 'v3') {
             url = self.config.apiBaseV3 + 'traffic/' + stopConfig.line[0] + '/' + stopConfig.line[1];
-            self.getResponse(url, self.processStatus.bind(this), stopConfig);
+            self.getResponse(url, self.processTraffic.bind(this), stopConfig);
           } else {
             console.log (' *** API version not handled for: ' + stopConfig.type + ' type, version: ' + stopConfig.api);
           }
@@ -149,10 +149,20 @@ module.exports = NodeHelper.create({
     this.sendSocketNotification("BUS", this.schedule);
   },
 
-  processStatus: function (data, stopConfig) {
+  processTraffic: function (data, stopConfig) {
+    var result, idMaker;
     console.log ('response receive: ');
-    console.log (data.response);
+    console.log (data.result); //line, title, message
     console.log ('___');
+    result = {};
+    if (data.result) {
+      result = data.result;
+      idMaker = data._metadata.call.split('/');
+    }
+    result.id = idMaker[idMaker.length - 3] + '/' + idMaker[idMaker.length - 2] + '/' + idMaker[idMaker.length - 1];
+    result.lastUpdate = new Date();
+    result.loaded = true;
+    this.sendSocketNotification("TRAFFIC", result);
   }
 
 });
