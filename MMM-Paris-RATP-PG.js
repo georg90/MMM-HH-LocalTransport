@@ -89,7 +89,7 @@ Module.register("MMM-Paris-RATP-PG",{
     }
     
     var table = document.createElement("table");
-    var stopIndex, message;
+    var stopIndex;
     var previousRow, previousDestination, previousMessage, row, comingBus;
     var firstCell, secondCell;
     wrapper.appendChild(table);
@@ -108,17 +108,8 @@ Module.register("MMM-Paris-RATP-PG",{
           row.appendChild(firstCell);
           secondCell = document.createElement("td");
           secondCell.className = "align-left";
-          message = this.config.conversion[this.ratpTraffic[stopIndex].message] || this.ratpTraffic[stopIndex].message;
-          secondCell.innerHTML = this.ratpTraffic[stopIndex] ? message : 'N/A';
+          secondCell.innerHTML = this.ratpTraffic[stopIndex] ? this.config.conversion[this.ratpTraffic[stopIndex].message] || this.ratpTraffic[stopIndex].message : 'N/A';
           secondCell.colSpan = 2;
-          if (this.caller == 'TRAFFIC') {
-            console.log(' *** ratpTraffic');
-            console.log (stopIndex);
-            console.log(this.ratpTraffic);
-            console.log (secondCell.innerHTML);
-            console.log ('message: ' + message);
-            console.log (this.config.conversion);
-          }
           row.appendChild(secondCell);
           table.appendChild(row);
           break;
