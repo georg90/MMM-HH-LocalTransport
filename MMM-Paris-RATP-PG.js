@@ -99,7 +99,7 @@ Module.register("MMM-Paris-RATP-PG",{
       var stop = this.config.busStations[busIndex];
       switch (stop.type) {
         case "traffic":
-          stopIndex = stop.line[0].toString().toLowerCase() + '/' + stop.line[1].toString().toLowerCase();
+          stopIndex = 'traffic' + stop.line[0].toString().toLowerCase() + '/' + stop.line[1].toString().toLowerCase();
           row = document.createElement("tr");
           firstCell = document.createElement("td");
           firstCell.className = "align-right bright";
@@ -110,9 +110,9 @@ Module.register("MMM-Paris-RATP-PG",{
           secondCell.innerHTML = this.ratpTraffic[stopIndex] ? this.ratpTraffic[stopIndex].message : 'N/A';
           if (this.caller == 'TRAFFIC') {
             console.log(' *** ratpTraffic');
+            console.log (stopIndex);
             console.log(this.ratpTraffic);
             console.log (secondCell.innerHTML);
-            console.log (this.ratpTraffic);
           }
           row.appendChild(secondCell);
           break;
