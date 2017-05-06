@@ -52,7 +52,7 @@ Module.register("MMM-Paris-RATP-PG",{
     this.updateTimer = null;
     var self = this;
     setInterval(function () {
-      self.loaded = false();
+      self.loaded = false;
       self.updateDom();
     }, 1000);
   },
