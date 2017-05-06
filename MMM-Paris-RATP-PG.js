@@ -52,6 +52,7 @@ Module.register("MMM-Paris-RATP-PG",{
     this.updateTimer = null;
     var self = this;
     setInterval(function () {
+      self.loaded = false();
       self.updateDom();
     }, 1000);
   },
@@ -98,8 +99,10 @@ Module.register("MMM-Paris-RATP-PG",{
       var stop = this.config.busStations[busIndex];
       switch (stop.type) {
         case "traffic":
-          console.log (' *** ratpTraffic');
-          console.log(this.ratpTraffic);
+          if (this.loaded) {
+            console.log(' *** ratpTraffic');
+            console.log(this.ratpTraffic);
+          }
           stopIndex = stop.line[0].toString().toLowerCase() + '/' + stop.line[1].toString().toLowerCase();
           row = document.createElement("tr");
           firstCell = document.createElement("td");
@@ -306,12 +309,14 @@ Module.register("MMM-Paris-RATP-PG",{
             console.log(' *** redundant velib payload for ' + payload.id + ' with time ' + payload.lastUpdate + ' && ' + this.velibHistory[payload.id][this.velibHistory[payload.id].length - 1].lastUpdate);
           }
         }
+        this.loaded = true;
         break;
       case "TRAFFIC":
         console.log (' *** received traffic information for: ' + payload.id);
         console.log (payload);
         this.ratpTraffic[payload.id] = payload;
         this.ratpTrafficLastUpdate[payload.id] = payload.lastUpdate;
+        this.loaded = true;
         this.updateDom();
         break;
       case "UPDATE":
