@@ -112,6 +112,7 @@ Module.register("MMM-Paris-RATP-PG",{
             console.log(' *** ratpTraffic');
             console.log(this.ratpTraffic);
             console.log (secondCell.innerHTML);
+            console.log (this.ratpTraffic);
           }
           row.appendChild(secondCell);
           break;
