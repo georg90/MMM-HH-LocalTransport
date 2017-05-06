@@ -159,7 +159,7 @@ module.exports = NodeHelper.create({
       result = data.result;
       idMaker = data._metadata.call.split('/');
     }
-    result.id = idMaker[idMaker.length - 3] + '/' + idMaker[idMaker.length - 2] + '/' + idMaker[idMaker.length - 1];
+    result.id = idMaker[idMaker.length - 3].toString().toLowerCase() + '/' + idMaker[idMaker.length - 2].toString().toLowerCase() + '/' + idMaker[idMaker.length - 1].toString().toLowerCase();
     result.lastUpdate = new Date();
     result.loaded = true;
     this.sendSocketNotification("TRAFFIC", result);
