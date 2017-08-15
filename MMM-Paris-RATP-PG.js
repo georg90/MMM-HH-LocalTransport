@@ -281,6 +281,9 @@ Module.register("MMM-Paris-RATP-PG",{
   },
   
   socketNotificationReceived: function(notification, payload) {
+    var maxVelibArchiveAge = this.config.velibTrendDay ? 24 * 60 * 60 : this.config.velibTrendTimeScale || 60 * 60;
+    var velibArchiveCleaned = 0;
+    var now = new Date();
     this.caller = notification;
     switch (notification) {
       case "BUS":
@@ -290,18 +293,32 @@ Module.register("MMM-Paris-RATP-PG",{
         this.updateDom();
         break;
       case "VELIB":
-        if (!this.velibHistory[payload.id]) {
+        if (!this.velibHistory[payload.id]) { // loading of data
           this.velibHistory[payload.id] = localStorage[payload.id] ? JSON.parse(localStorage[payload.id]) : [];
+          while ((this.velibHistory[payload.id].length > 0) && (((now - new Date(this.velibHistory[payload.id][0].lastUpdate)) / 1000) > maxVelibArchiveAge) ) {
+            this.velibHistory[payload.id].shift();
+            velibArchiveCleaned++;
+          }
+          if (this.config.debug) {
+            console.log (' *** First load size of velib History for ' + payload.id + ' is: ' + this.velibHistory[payload.id].length);
+            console.log (velibArchiveCleaned + ' elements removed');
+            console.log (this.velibHistory[payload.id]);
+          }
           this.velibHistory[payload.id].push(payload);
           localStorage[payload.id] = JSON.stringify(this.velibHistory[payload.id]);
           if (this.config.debug) {console.log (' *** size of velib History for ' + payload.id + ' is: ' + this.velibHistory[payload.id].length);}
           this.updateDom();
         } else if (this.velibHistory[payload.id][this.velibHistory[payload.id].length - 1].lastUpdate != payload.lastUpdate) {
+          while ((this.velibHistory[payload.id].length > 0) && (((now - new Date(this.velibHistory[payload.id][0].lastUpdate)) / 1000) > maxVelibArchiveAge) ) {
+            this.velibHistory[payload.id].shift();
+            velibArchiveCleaned++;
+          }
           this.velibHistory[payload.id].push(payload);
           localStorage[payload.id] = JSON.stringify(this.velibHistory[payload.id]);
           this.updateDom();
           if (this.config.debug) {
-            console.log (' *** size of velib History for ' + payload.id + ' is: ' + this.velibHistory[payload.id].length);
+            console.log (' *** Update - size of velib History for ' + payload.id + ' is: ' + this.velibHistory[payload.id].length);
+            console.log (velibArchiveCleaned + ' elements removed');
             console.log (this.velibHistory[payload.id]);
           }
         } else {
