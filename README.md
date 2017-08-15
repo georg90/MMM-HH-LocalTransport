@@ -11,11 +11,11 @@ A module to display:
 * available docks & bikes in selected Velib stations, along with the trend over the last day (configurable).
 
 # Screenshot
-![screenshot](https://github.com/da4throux/MMM-Paris-RATP-PG/blob/master/MMM-Paris-RATP-PG2.png)
+![screenshot](https://github.com/da4throux/MMM-Paris-RATP-PG/blob/history/MMM-Paris-RATP-PG%201.6.png)
 
 # API
 
-It is based on the open REST API from Pierre Grimaud https://github.com/pgrimaud/horaires-ratp-api, which does not require any configuration / registration. Immediate use. Support v2 & v3.
+It is based on the open REST API from Pierre Grimaud https://github.com/pgrimaud/horaires-ratp-api, which does not require any configuration / registration. Immediate use. Support v2 & v3 (however the v2 seems to be deprecated, so you should rely on v3).
 It also use the Paris Open Data for the velib: https://opendata.paris.fr/explore/dataset/stations-velib-disponibilites-en-temps-reel/ (use it to get the 5 digits stations you will need for the configuration).
 
 # Install
@@ -83,4 +83,4 @@ busStations: [
 	{api: 'v3', type: 'metros', line: '6', stations: 'raspail', destination: 'A'},
 	{type: 'velib', stations: 05029, destination: 'leaving', label 'RER'}]
 ```
-# v1.5
+# v1.6
