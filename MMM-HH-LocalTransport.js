@@ -3,7 +3,7 @@
 /* Magic Mirror
  * Module: HH-LocalTransport
  *
- * By Georg Peters (https://lane6.de)
+ * By Georg Peters https://github.com/georg90/
  * based on a script from Benjamin Angst http://www.beny.ch
  * MIT Licensed.
  */
@@ -19,11 +19,16 @@ Module.register("MMM-HH-LocalTransport",{
 		animationSpeed: 2000,
 		fade: true,
 		fadePoint: 0.25, // Start on 1/4th of the list.
-        initialLoadDelay: 0, // start delay seconds.
-		apiBase: 'http://api-test.geofox.de/gti/public/',
+    initialLoadDelay: 0, // start delay seconds.
+		apiBase: 'http://api-prod.geofox.de/gti/public/',
+		customAPI: false, // Set to true if signature is generated via external API
+		customUrl: 'https://custom-api.url.de/apiEndpoint', // change to API endpoint (receiving payload and returns siganture)
+		customAPIToken: 'token123', // custom token to authenticate
 		apiKey: 'Hamburg',
 		apiUser: 'name',
-        id: "Master:9910910", // HH HBF
+		Realtime: true,
+		version: 27, // HVV API version
+    id: "Master:9910910", // HH HBF
 	},
 
 	// Define required scripts.
@@ -39,8 +44,8 @@ Module.register("MMM-HH-LocalTransport",{
 		this.loaded = false;
 		this.updateTimer = null;
 
-	},    
-    
+	},
+
 	// Override dom generator.
 	getDom: function() {
 		var wrapper = document.createElement("div");
@@ -78,14 +83,14 @@ Module.register("MMM-HH-LocalTransport",{
 				depCell.innerHTML = "now";
 			}
 			else {
-			depCell.innerHTML = "in " + trains.departureTimestamp + " min";
+			depCell.innerHTML = trains.departureTimestamp + " min";
 		    }
 			row.appendChild(depCell);
 
                         if(trains.delay) {
                             var delayCell = document.createElement("td");
                             delayCell.className = "delay red";
-                            delayCell.innerHTML = "+" + trains.delay + " min";
+                            delayCell.innerHTML = " (+" + trains.delay + ")";
                             row.appendChild(delayCell);
                         } else {
                             var delayCell = document.createElement("td");

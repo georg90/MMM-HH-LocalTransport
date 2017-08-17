@@ -1,7 +1,5 @@
 # MMM-HH-LocalTransport
 
-###More detailed information on my [blog](https://lane6.de).
-
 # Get API key
 
 You need to obtain your API key here: http://www.hvv.de/fahrplaene/fahrplanauskunft/datenschnittstelle/
@@ -21,6 +19,11 @@ You need to obtain your API key here: http://www.hvv.de/fahrplaene/fahrplanausku
 	            id: '', // Trainstation ID
 	            apiKey: '', // Add your apiKey
 	            apiUser: '', // Add your apiUser
+							customAPI: false, // or true
+							customUrl: 'http://api/v1/getSignature',
+							customAPIToken: 'token123',
+							updateInterval: 60000,
+							maximumEntries: '10' // Max departures displayed
 	        }
     	},
 ```
@@ -29,4 +32,4 @@ You need to obtain your API key here: http://www.hvv.de/fahrplaene/fahrplanausku
 
 
 # Further information
-For all config options check [here](https://github.com/georg90/MMM-HH-LocalTransport/blob/master/MMM-HH-LocalTransport.js#L14-L26).
+For all config options check [here](https://github.com/georg90/MMM-HH-LocalTransport/blob/master/MMM-HH-LocalTransport.js#L15-L31).
