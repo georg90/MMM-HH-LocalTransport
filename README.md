@@ -19,11 +19,11 @@ You need to obtain your API key here: http://www.hvv.de/fahrplaene/fahrplanausku
 	            id: '', // Trainstation ID
 	            apiKey: '', // Add your apiKey
 	            apiUser: '', // Add your apiUser
-							customAPI: false, // or true
-							customUrl: 'http://api/v1/getSignature',
-							customAPIToken: 'token123',
-							updateInterval: 60000,
-							maximumEntries: '10' // Max departures displayed
+		    customAPI: false, // or true
+		    customUrl: 'http://api/v1/getSignature',
+		    customAPIToken: 'token123',
+		    updateInterval: 60000,
+		    maximumEntries: '10' // Max departures displayed
 	        }
     	},
 ```
