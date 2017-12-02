@@ -93,11 +93,7 @@ module.exports = NodeHelper.create({
         case 'bus':
         case 'rers':
         case 'metros':
-          if (stopConfig.api == 'v3') {
-            url = self.config.apiBaseV3 + 'schedules/' + stopConfig.type + '/' + stopConfig.line.toString().toLowerCase() + '/' + stopConfig.stations + '/' + stopConfig.destination; // get schedule for that bus
-          } else {
-            url = self.config.apiBase + stopConfig.type + '/' + stopConfig.line.toString().toLowerCase() + '/stations/' + stopConfig.stations + '?destination=' + stopConfig.destination; // get schedule for that bus
-          }
+          url = self.config.apiBaseV3 + 'schedules/' + stopConfig.type + '/' + stopConfig.line.toString().toLowerCase() + '/' + stopConfig.stations + '/' + stopConfig.destination; // get schedule for that bus
           self.getResponse(url, self.processBus.bind(this), stopConfig);
           break;
         case "velib":
@@ -105,14 +101,8 @@ module.exports = NodeHelper.create({
           self.getResponse(url, self.processVelib.bind(this));
           break;
         case 'traffic':
-          if (stopConfig.api == 'v3') {
-            url = self.config.apiBaseV3 + 'traffic/' + stopConfig.line[0] + '/' + stopConfig.line[1];
-            self.getResponse(url, self.processTraffic.bind(this), stopConfig);
-          } else {
-            if (this.config.debug) {
-              console.log(' *** API version not handled for: ' + stopConfig.type + ' type, version: ' + stopConfig.api);
-            }
-          }
+          url = self.config.apiBaseV3 + 'traffic/' + stopConfig.line[0] + '/' + stopConfig.line[1];
+          self.getResponse(url, self.processTraffic.bind(this), stopConfig);
           break;
         default:
           if (this.config.debug) {

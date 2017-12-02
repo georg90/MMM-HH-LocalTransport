@@ -20,7 +20,6 @@ Module.register("MMM-Paris-RATP-PG",{
     animationSpeed: 2000,
     convertToWaitingTime: true, // messages received from API can be 'hh:mm' in that case convert it in the waiting time 'x mn'
     initialLoadDelay: 0, // start delay seconds.
-    apiBase: 'https://api-ratp.pierre-grimaud.fr/v2/',
     apiBaseV3: 'https://api-ratp.pierre-grimaud.fr/v3/',
     maxLettersForDestination: 22, //will limit the length of the destination string
     concatenateArrivals: true, //if for a transport there is the same destination and several times, they will be displayed on one line
