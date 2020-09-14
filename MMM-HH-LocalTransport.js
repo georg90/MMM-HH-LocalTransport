@@ -19,8 +19,8 @@ Module.register("MMM-HH-LocalTransport",{
 		animationSpeed: 2000,
 		fade: true,
 		fadePoint: 0.25, // Start on 1/4th of the list.
-    initialLoadDelay: 0, // start delay seconds.
-		apiBase: 'http://api-prod.geofox.de/gti/public/',
+		initialLoadDelay: 0, // start delay seconds.
+		apiBase: 'https://gti.geofox.de/gti/public/',
 		customAPI: false, // Set to true if signature is generated via external API
 		customUrl: 'https://custom-api.url.de/apiEndpoint', // change to API endpoint (receiving payload and returns siganture)
 		customAPIToken: 'token123', // custom token to authenticate
@@ -63,13 +63,13 @@ Module.register("MMM-HH-LocalTransport",{
 		}
 
 		if (!this.loaded) {
-			wrapper.innerHTML = "Loading connections ...";
+			wrapper.innerHTML = "Lade Verbindungen ...";
 			wrapper.className = "dimmed light small";
 			return wrapper;
 		}
 
 		var table = document.createElement("table");
-		table.className = "small";
+		table.className = "hhtransport";
 
 		for (var t in this.trains) {
 			var trains = this.trains[t];
@@ -80,7 +80,7 @@ Module.register("MMM-HH-LocalTransport",{
 			var depCell = document.createElement("td");
 			depCell.className = "departuretime";
 			if (trains.departureTimestamp == 0) {
-				depCell.innerHTML = "now";
+				depCell.innerHTML = "jetzt";
 			}
 			else {
 			depCell.innerHTML = trains.departureTimestamp + " min";

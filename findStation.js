@@ -24,7 +24,7 @@ function getStationId() {
 	}
     };
     var sig = getSignature(data);
-    unirest.post('http://api-test.geofox.de/gti/public/checkName')
+    unirest.post('https://gti.geofox.de/gti/public/checkName')
     .headers({
           'Content-Type': 'application/json;charset=UTF-8',
           'geofox-auth-user': user,
